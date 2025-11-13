@@ -8,17 +8,37 @@
   font-family: "Inter", sans-serif;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   background: #0d0f14;
   color: #e7e7e7;
-  padding-bottom: 140px; /* ruang untuk tombol floating */
+  overflow: hidden; /* ⛔ ga bisa scroll halaman */
 }
 
+/* Container full-screen */
 .container {
-  width: 92%;
-  max-width: 900px;
-  margin: auto;
-  padding-top: 20px;
+  height: 100vh;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 10px 12px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ============================
+   TITLE ATAS
+============================ */
+.app-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #3df58a;
 }
 
 /* ============================
@@ -26,159 +46,172 @@ body {
 ============================ */
 .card {
   background: #15171f;
-  border-radius: 18px;
-  padding: 18px 20px;
-  margin-bottom: 20px;
-  box-shadow: 0px 0px 18px rgba(0, 255, 140, 0.06);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0px 0px 14px rgba(0, 255, 140, 0.05);
   border: 1px solid rgba(0, 255, 140, 0.1);
-  animation: fadeUp 0.4s ease;
-}
-
-@keyframes fadeUp {
-  from {opacity: 0; transform: translateY(10px);}
-  to {opacity: 1; transform: translateY(0);}
 }
 
 /* ============================
-   HEADER AREA (SALDO + TIME)
+   HEADER (SALDO + WAKTU)
 ============================ */
 .header {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
-.saldo-box h1 {
-  font-size: 46px;
-  color: #3df58a;
-  font-weight: 800;
+.mini-card {
+  padding: 10px 12px;
 }
 
-.time-box h1 {
-  font-size: 32px;
+.label-top {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.saldo-box h2 {
+  font-size: 20px;
   color: #3df58a;
-  margin-top: 4px;
+}
+
+.date-mini {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.time-mini {
+  font-size: 17px;
+  font-weight: 600;
+  color: #3df58a;
 }
 
 /* ============================
-   MAIN CONTENT GRID
+   MAIN AREA
 ============================ */
 .main {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
+  flex: 1; /* ambil sisa tinggi layar */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.form-card {
-  grid-column: span 1;
+/* FORM CARD */
+.section-title {
+  font-size: 16px;
+  margin-bottom: 4px;
 }
 
-.info-card {
-  grid-column: span 1;
+.sub-text {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-bottom: 10px;
 }
 
-/* ============================
-   FORM STYLE
-============================ */
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.form-group {
+  flex: 1;
+}
+
 label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  font-size: 15px;
+  margin-bottom: 4px;
+  font-size: 12px;
 }
 
 input,
 select,
 textarea {
   width: 100%;
-  padding: 12px;
+  padding: 9px;
   background: #0e1016;
   border: 1px solid #23252e;
   color: #fff;
-  border-radius: 10px;
-  margin-bottom: 16px;
-  font-size: 15px;
+  border-radius: 9px;
+  margin-bottom: 10px;
+  font-size: 13px;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  outline: 2px solid #3df58a;
+  outline: 1.5px solid #3df58a;
 }
 
-.sub-text {
-  opacity: 0.7;
-  margin-bottom: 14px;
-  font-size: 14px;
+textarea {
+  resize: none;
 }
 
-/* Button */
+/* Button simpan */
 .btn-primary {
   width: 100%;
-  padding: 14px;
+  padding: 10px;
   background: #3df58a;
   color: #000;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
-  font-size: 16px;
-  transition: 0.2s;
-}
-
-.btn-primary:hover {
-  background: #2be070;
+  font-size: 15px;
 }
 
 /* ============================
-   MOTIVATION PANEL
+   INFO / MOTIVASI
 ============================ */
-.motivation-list {
-  margin: 12px 0 18px;
-  padding-left: 18px;
-  font-size: 14px;
-  opacity: 0.9;
+.info-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .motiv-title {
-  font-size: 15px;
-  margin-bottom: 10px;
-  opacity: 0.9;
-  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.motivation-list {
+  margin-left: 16px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.motivation-list li::marker {
+  color: #3df58a;
 }
 
 .stats-row {
   display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .mini-stat {
+  flex: 1;
   background: #0f1118;
-  padding: 10px 14px;
-  border-radius: 12px;
-  width: 48%;
-  text-align: center;
+  padding: 8px;
+  border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
 }
 
 .mini-stat .label {
+  display: block;
+  font-size: 11px;
   opacity: 0.7;
-  font-size: 13px;
 }
 
 .mini-stat span:last-child {
-  display: block;
-  font-size: 18px;
-  margin-top: 6px;
+  font-size: 14px;
   font-weight: 700;
   color: #3df58a;
-}
-
-.small-text {
-  margin-top: 15px;
-  opacity: 0.7;
-  font-size: 13px;
 }
 
 /* ============================
@@ -186,30 +219,25 @@ textarea:focus {
 ============================ */
 .float-btn {
   position: fixed;
-  right: 20px;
-  padding: 12px 22px;
+  right: 14px;
+  padding: 10px 18px;
   border-radius: 999px;
   border: none;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(0,0,0,0.5);
+  box-shadow: 0 0 10px rgba(0,0,0,0.6);
   z-index: 200;
-  transition: 0.15s ease;
-}
-
-.float-btn:hover {
-  transform: scale(1.05);
 }
 
 .float-reset {
-  bottom: 90px;
+  bottom: 78px;
   background: #ff4444;
   color: #fff;
 }
 
 .float-history {
-  bottom: 25px;
+  bottom: 28px;
   background: #3df58a;
   color: #000;
 }
@@ -227,41 +255,37 @@ textarea:focus {
   z-index: 300;
 }
 
-.modal-backdrop.show {
-  display: flex;
-}
-
 .modal {
-  width: 92%;
-  max-width: 760px;
+  width: 96%;
+  max-width: 420px;
+  max-height: 80vh;
   background: #15171f;
-  border-radius: 15px;
-  padding: 20px;
-  animation: fadeUp 0.3s ease;
+  border-radius: 14px;
+  padding: 12px;
   box-shadow: 0 0 15px rgba(0,255,140,0.12);
+  overflow-y: auto; /* yang boleh scroll cuma modal */
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .close-btn {
   background: none;
   border: none;
   color: #fff;
-  font-size: 22px;
+  font-size: 18px;
   cursor: pointer;
 }
 
-/* ============================
-   TABLE STYLE
-============================ */
+/* TABLE di modal */
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  font-size: 11px;
 }
 
 .table thead {
@@ -270,41 +294,30 @@ textarea:focus {
 
 .table th,
 .table td {
-  padding: 12px 10px;
+  padding: 6px 4px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   text-align: left;
-  font-size: 14px;
 }
 
 .table tbody tr:nth-child(even) {
   background: #12141a;
 }
 
-.delete-btn {
+.btn-delete {
   background: #ff4444;
-  padding: 6px 12px;
+  padding: 4px 8px;
   border-radius: 8px;
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 10px;
 }
 
-.delete-btn:hover {
-  background: #dd3333;
+/* WARNA BANTUAN */
+.green {
+  color: #3df58a;
 }
 
-/* ============================
-   RESPONSIVE
-============================ */
-@media (max-width: 760px) {
-  .header {
-    grid-template-columns: 1fr;
-  }
-  .main {
-    grid-template-columns: 1fr;
-  }
-  body {
-    padding-bottom: 170px;
-  }
+.red {
+  color: #ff6b6b;
 }
