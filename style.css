@@ -219,7 +219,7 @@ textarea {
 ============================ */
 .float-btn {
   position: fixed;
-  right: 14px;
+  bottom: 22px;          /* sama untuk dua tombol */
   padding: 10px 18px;
   border-radius: 999px;
   border: none;
@@ -230,16 +230,18 @@ textarea {
   z-index: 200;
 }
 
-.float-reset {
-  bottom: 20px;
-  background: #ff4444;
-  color: #fff;
-}
-
+/* Tombol kiri */
 .float-history {
-  bottom: 30px;
+  left: 14px;            /* ⬅ kiri */
   background: #3df58a;
   color: #000;
+}
+
+/* Tombol kanan */
+.float-reset {
+  right: 14px;           /* ➡ kanan */
+  background: #ff4444;
+  color: #fff;
 }
 
 /* ============================
