@@ -1,293 +1,124 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Azbry Finance</title>
-
-    <style>
-        body {
-            margin: 0;
-            background: #0b0f13;
-            color: white;
-            font-family: "Inter", sans-serif;
-        }
-
-        .main-wrapper {
-            padding: 20px;
-        }
-
-        /* tanggal & jam kanan atas */
-        .datetime-box {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            text-align: right;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        /* saldo kiri atas */
-        .saldo-box h1 {
-            font-size: 44px;
-            margin: 5px 0;
-            color: #00ff99;
-        }
-
-        .saldo-box h2 {
-            margin: 0;
-            font-size: 22px;
-            opacity: 0.8;
-        }
-
-        /* ringkasan tabel */
-        .hari-ini-box {
-            margin-top: 40px;
-        }
-
-        .hari-ini-box h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #11161d;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 14px 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        th {
-            background: #151b23;
-            font-size: 14px;
-            text-transform: uppercase;
-            opacity: 0.7;
-        }
-
-        /* tombol riwayat */
-        .riwayat-btn {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #00ff99;
-            color: #000;
-            padding: 16px 22px;
-            font-size: 16px;
-            font-weight: 700;
-            border-radius: 14px;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* modal */
-        .riwayat-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(3px);
-        }
-
-        .modal-content {
-            background: #11161d;
-            padding: 20px;
-            max-width: 800px;
-            margin: 50px auto;
-            border-radius: 14px;
-        }
-
-        .close-btn {
-            float: right;
-            padding: 6px 14px;
-            background: #333;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .green {
-            color: #00ff99;
-        }
-        .red {
-            color: #ff4d4d;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azbry Finance</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+  <div class="page-wrap">
+    <!-- TOP BAR: saldo kiri, waktu kanan -->
+    <header class="top-bar">
+      <div class="saldo-box">
+        <p class="saldo-label">Saldo Kamu</p>
+        <h1 id="saldoValue">Rp 0</h1>
+      </div>
 
-<div class="main-wrapper">
-
-    <!-- waktu kanan atas -->
-    <div class="datetime-box">
+      <div class="datetime-box">
         <div id="current-date"></div>
         <div id="current-time"></div>
+      </div>
+    </header>
+
+    <!-- MAIN: form + kartu info di tengah -->
+    <main class="main-content">
+      <!-- FORM TRANSAKSI -->
+      <section class="card form-card">
+        <h2>Tambah Transaksi</h2>
+        <form id="transactionForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dateInput">Tanggal</label>
+              <input type="date" id="dateInput" required />
+            </div>
+            <div class="form-group">
+              <label for="typeInput">Jenis</label>
+              <select id="typeInput" required>
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="amountInput">Nominal (Rp)</label>
+            <input type="number" id="amountInput" min="0" required />
+          </div>
+
+          <div class="form-group">
+            <label for="categoryInput">Kategori</label>
+            <input
+              type="text"
+              id="categoryInput"
+              placeholder="Gaji, makan, wifi, dll"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="noteInput">Catatan</label>
+            <textarea
+              id="noteInput"
+              rows="2"
+              placeholder="Opsional, misal: bayar kos, ngopi, dll"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn primary-btn">
+            ✅ Simpan Transaksi
+          </button>
+        </form>
+      </section>
+
+      <!-- KARTU INFO DI TENGAH BIAR GA KOSONG -->
+      <section class="card info-card">
+        <h3>Tips Pemakaian</h3>
+        <p>
+          • Input semua pemasukan & pengeluaran harian di form sebelah atas. <br />
+          • Jangan fokus ke nominal, fokus ke konsistensi nyatat. <br />
+          • Semua data disimpan di Supabase khusus project ini.
+        </p>
+        <p class="small-text">
+          Ringkasan transaksi hari ini & total saldo akan otomatis
+          ter-update setelah kamu menyimpan transaksi baru.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <!-- TOMBOL RIWAYAT DI KANAN BAWAH -->
+  <button class="btn history-btn" onclick="openRiwayat()">
+    📜 Riwayat Transaksi
+  </button>
+
+  <!-- MODAL RIWAYAT -->
+  <div id="riwayatModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Riwayat Transaksi</h2>
+        <button class="btn ghost-btn" onclick="closeRiwayat()">Tutup</button>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Jenis</th>
+            <th>Kategori</th>
+            <th>Catatan</th>
+            <th>Nominal</th>
+          </tr>
+        </thead>
+        <tbody id="historyList">
+          <tr><td colspan="5">Loading...</td></tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <!-- saldo kiri atas -->
-    <section class="saldo-box">
-        <h2>Saldo Kamu</h2>
-        <h1 id="saldoValue">Rp 0</h1>
-    </section>
-
-    <!-- tabel hari ini -->
-    <section class="hari-ini-box">
-        <h3>Ringkasan Hari Ini</h3>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Nominal</th>
-                    <th>Jenis</th>
-                    <th>Catatan</th>
-                </tr>
-            </thead>
-            <tbody id="todayTransactions">
-                <tr><td colspan="3">Belum ada transaksi</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- tombol riwayat -->
-    <button class="riwayat-btn" onclick="openRiwayat()">
-        📜 Riwayat Transaksi
-    </button>
-
-</div>
-
-<!-- modal -->
-<div id="riwayatModal" class="riwayat-modal">
-    <div class="modal-content">
-        <h2>Semua Riwayat</h2>
-        <button class="close-btn" onclick="closeRiwayat()">Tutup</button>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>Jenis</th>
-                    <th>Kategori</th>
-                    <th>Catatan</th>
-                    <th>Nominal</th>
-                </tr>
-            </thead>
-            <tbody id="historyList">
-                <tr><td colspan="5">Loading...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- JS Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>
-
-<script>
-    /* ====== SETTING SUPABASE ====== */
-    const SUPABASE_URL = "https://mxmnmujsqhzrmivdiqvk.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14bW5tdWpzcWh6cm1pdmRpcXZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMjYyMzAsImV4cCI6MjA3ODYwMjIzMH0.BZHHWmSXPwuF1jtIxd4tvIFHke7c5QyiP55lE1oBNVo";
-
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    /* ====== JAM REALTIME ====== */
-    setInterval(() => {
-        const now = new Date();
-        document.getElementById("current-date").innerText =
-            now.toLocaleDateString("id-ID", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-            });
-
-        document.getElementById("current-time").innerText =
-            now.toLocaleTimeString("id-ID", {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-            });
-    }, 1000);
-
-    /* ====== LOAD DATA ====== */
-    async function loadData() {
-        const { data } = await supabase
-            .from("transactions")
-            .select("*")
-            .order("id", { ascending: false });
-
-        updateSaldo(data);
-        loadToday(data);
-        loadHistory(data);
-    }
-
-    /* ====== HITUNG SALDO ====== */
-    function updateSaldo(data) {
-        let saldo = 0;
-        data.forEach(t => {
-            if (t.type === "income") saldo += t.amount;
-            else saldo -= t.amount;
-        });
-        document.getElementById("saldoValue").innerText =
-            "Rp " + saldo.toLocaleString("id-ID");
-    }
-
-    /* ====== HARI INI ====== */
-    function loadToday(data) {
-        const today = new Date().toISOString().split("T")[0];
-        const list = document.getElementById("todayTransactions");
-        list.innerHTML = "";
-
-        const filtered = data.filter(t => t.date === today);
-
-        if (filtered.length === 0) {
-            list.innerHTML = "<tr><td colspan='3'>Belum ada transaksi hari ini</td></tr>";
-            return;
-        }
-
-        filtered.forEach(t => {
-            list.innerHTML += `
-            <tr>
-                <td class="${t.type === 'income' ? 'green' : 'red'}">Rp ${t.amount.toLocaleString("id-ID")}</td>
-                <td>${t.type === "income" ? "Masuk" : "Keluar"}</td>
-                <td>${t.note || "-"}</td>
-            </tr>`;
-        });
-    }
-
-    /* ====== RIWAYAT ====== */
-    function loadHistory(data) {
-        const list = document.getElementById("historyList");
-        list.innerHTML = "";
-
-        data.forEach(t => {
-            list.innerHTML += `
-            <tr>
-                <td>${t.date}</td>
-                <td>${t.type === "income" ? "<span class='green'>Masuk</span>" : "<span class='red'>Keluar</span>"}</td>
-                <td>${t.category || "-"}</td>
-                <td>${t.note || "-"}</td>
-                <td class="${t.type === 'income' ? 'green' : 'red'}">Rp ${t.amount.toLocaleString("id-ID")}</td>
-            </tr>`;
-        });
-    }
-
-    /* ====== MODAL ====== */
-    function openRiwayat() {
-        document.getElementById("riwayatModal").style.display = "block";
-    }
-    function closeRiwayat() {
-        document.getElementById("riwayatModal").style.display = "none";
-    }
-
-    /* ====== JALANKAN ====== */
-    loadData();
-</script>
-
+  <!-- SCRIPT -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
 </body>
 </html>
