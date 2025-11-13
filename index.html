@@ -8,25 +8,32 @@
 </head>
 
 <body>
+  <div class="bg-glow"></div>
+
   <div class="page-wrap">
-    <!-- TOP BAR: saldo kiri, waktu kanan -->
+    <!-- TOP BAR -->
     <header class="top-bar">
-      <div class="saldo-box">
+      <div class="saldo-box card">
         <p class="saldo-label">Saldo Kamu</p>
         <h1 id="saldoValue">Rp 0</h1>
+        <p class="saldo-sub">Ringkasan total semua transaksi</p>
       </div>
 
-      <div class="datetime-box">
-        <div id="current-date"></div>
-        <div id="current-time"></div>
+      <div class="datetime-box card">
+        <p class="datetime-label">Waktu Sekarang</p>
+        <div id="current-date" class="date-text"></div>
+        <div id="current-time" class="time-text"></div>
       </div>
     </header>
 
-    <!-- MAIN: form + kartu info di tengah -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
       <!-- FORM TRANSAKSI -->
       <section class="card form-card">
         <h2>Tambah Transaksi</h2>
+        <p class="card-sub">
+          Catat pemasukan & pengeluaran harian. Data langsung tersimpan di Supabase.
+        </p>
         <form id="transactionForm">
           <div class="form-row">
             <div class="form-group">
@@ -71,25 +78,39 @@
         </form>
       </section>
 
-      <!-- KARTU INFO DI TENGAH BIAR GA KOSONG -->
+      <!-- INFO CARD / FILLER -->
       <section class="card info-card">
-        <h3>Tips Pemakaian</h3>
+        <h3>Azbry Finance Dashboard</h3>
         <p>
-          • Input semua pemasukan & pengeluaran harian di form sebelah atas. <br />
-          • Jangan fokus ke nominal, fokus ke konsistensi nyatat. <br />
-          • Semua data disimpan di Supabase khusus project ini.
+          • Fokus di disiplin nyatat harian, bukan seberapa besar nominalnya dulu. <br />
+          • Gunakan kategori yang konsisten (makan, kos, langganan, dll) biar gampang dianalisa. <br />
+          • Semua data disimpan di Supabase khusus project ini, jadi aman buat dipakai pribadi.
         </p>
+        <div class="stats-row">
+          <div class="mini-stat">
+            <span class="label">Total Transaksi</span>
+            <span id="totalTransactions">0</span>
+          </div>
+          <div class="mini-stat">
+            <span class="label">Terakhir Update</span>
+            <span id="lastUpdated">-</span>
+          </div>
+        </div>
         <p class="small-text">
-          Ringkasan transaksi hari ini & total saldo akan otomatis
-          ter-update setelah kamu menyimpan transaksi baru.
+          Next level nanti bisa ditambah grafik pemasukan / pengeluaran per bulan,
+          export ke CSV, dan lain-lain.
         </p>
       </section>
     </main>
   </div>
 
-  <!-- TOMBOL RIWAYAT DI KANAN BAWAH -->
+  <!-- FLOATING BUTTONS -->
   <button class="btn history-btn" onclick="openRiwayat()">
     📜 Riwayat Transaksi
+  </button>
+
+  <button class="btn reset-btn" onclick="resetRiwayat()">
+    🗑 Reset Semua
   </button>
 
   <!-- MODAL RIWAYAT -->
@@ -108,10 +129,11 @@
             <th>Kategori</th>
             <th>Catatan</th>
             <th>Nominal</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody id="historyList">
-          <tr><td colspan="5">Loading...</td></tr>
+          <tr><td colspan="6">Loading...</td></tr>
         </tbody>
       </table>
     </div>
