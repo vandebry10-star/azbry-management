@@ -191,7 +191,7 @@ textarea {
   display: flex;
   gap: 10px;
   margin-top: 0px;      /* semula 6px */
-  margin-bottom: 15px;   /* tambah jarak bawah */
+  margin-bottom: 35px;   /* tambah jarak bawah */
 }
 
 .mini-stat {
@@ -233,14 +233,14 @@ textarea {
 
 /* Tombol kiri */
 .float-history {
-  right: 14px;            /* ⬅ kiri */
+  right: 20px;            /* ⬅ kiri */
   background: #3df58a;
   color: #000;
 }
 
 /* Tombol kanan */
 .float-reset {
-  left: 14px;           /* ➡ kanan */
+  left: 20px;           /* ➡ kanan */
   background: #ff4444;
   color: #fff;
 }
