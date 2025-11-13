@@ -129,36 +129,26 @@ input,
 select,
 textarea {
   width: 100%;
-  padding: 9px;
+  padding: 14px;                     /* 🔥 lebih besar */
   background: #0e1016;
   border: 1px solid #23252e;
   color: #fff;
-  border-radius: 9px;
-  margin-bottom: 10px;
-  font-size: 13px;
+  border-radius: 12px;               /* 🔥 radius lebih smooth */
+  margin-bottom: 14px;               /* 🔥 jarak lebih luas */
+  font-size: 15px;                   /* 🔥 teks lebih besar */
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  outline: 1.5px solid #3df58a;
+  outline: 2px solid #3df58a;
+  background: #11131c;               /* efek fokus */
 }
 
 textarea {
   resize: none;
-}
-
-/* Button simpan */
-.btn-primary {
-  width: 100%;
-  padding: 10px;
-  background: #3df58a;
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 15px;
+  padding: 14px;
+  height: 68px;                      /* 🔥 lebih tinggi (lebih enak ngetik) */
 }
 
 /* ============================
