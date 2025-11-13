@@ -32,7 +32,7 @@ function startClock() {
   }, 1000);
 }
 
-/* ====== LOAD DATA DARI SUPABASE ====== */
+/* ====== LOAD DATA ====== */
 async function loadData() {
   const { data, error } = await client
     .from("transactions")
@@ -48,19 +48,22 @@ async function loadData() {
   updateSaldo(rows);
   renderHistory(rows);
   updateStats(rows);
+
+  renderToday(rows);
 }
 
-/* ====== UPDATE SALDO ====== */
+/* ====== HITUNG SALDO ====== */
 function updateSaldo(rows) {
   let saldo = 0;
   rows.forEach((t) => {
     if (t.type === "income") saldo += t.amount;
     else saldo -= t.amount;
   });
+
   document.getElementById("saldoValue").innerText = formatRupiah(saldo);
 }
 
-/* ====== STAT KECIL (Total transaksi & terakhir update) ====== */
+/* ====== STAT SUMMARY ====== */
 function updateStats(rows) {
   document.getElementById("totalTransactions").innerText = rows.length;
 
@@ -71,6 +74,38 @@ function updateStats(rows) {
 
   const latest = rows[0];
   document.getElementById("lastUpdated").innerText = latest.date;
+}
+
+/* ====== RINGKASAN HARI INI ====== */
+function renderToday(rows) {
+  const today = new Date().toISOString().split("T")[0];
+  const tbody = document.getElementById("hariIniTable") || document.getElementById("hariIniList");
+  if (!tbody) return;
+
+  const todayRows = rows.filter((t) => t.date === today);
+
+  tbody.innerHTML = "";
+
+  if (!todayRows.length) {
+    tbody.innerHTML =
+      `<tr><td colspan="4" class="empty">Belum ada transaksi</td></tr>`;
+    return;
+  }
+
+  todayRows.forEach((t) => {
+    tbody.innerHTML += `
+      <tr>
+        <td class="${t.type === "income" ? "green" : "red"}">
+          ${formatRupiah(t.amount)}
+        </td>
+        <td>${t.type === "income" ? "Masuk" : "Keluar"}</td>
+        <td>${t.note || "-"}</td>
+        <td>
+          <button class="btn-delete" onclick="deleteTxn(${t.id})">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
 }
 
 /* ====== RENDER RIWAYAT (MODAL) ====== */
@@ -99,57 +134,14 @@ function renderHistory(rows) {
           ${formatRupiah(t.amount)}
         </td>
         <td>
-          <button class="btn btn-delete" onclick="deleteTxn(${t.id})">
-            Hapus
-          </button>
+          <button class="btn-delete" onclick="deleteTxn(${t.id})">Hapus</button>
         </td>
       </tr>
     `;
   });
 }
 
-/* ====== MODAL RIWAYAT ====== */
-window.openRiwayat = function () {
-  document.getElementById("riwayatModal").style.display = "block";
-};
-
-window.closeRiwayat = function () {
-  document.getElementById("riwayatModal").style.display = "none";
-};
-
-/* ====== DELETE SATU TRANSAKSI ====== */
-window.deleteTxn = async function (id) {
-  const yakin = confirm("Hapus transaksi ini?");
-  if (!yakin) return;
-
-  const { error } = await client.from("transactions").delete().eq("id", id);
-  if (error) {
-    console.error(error);
-    alert("Gagal menghapus transaksi.");
-    return;
-  }
-
-  await loadData();
-};
-
-/* ====== RESET SEMUA TRANSAKSI ====== */
-window.resetRiwayat = async function () {
-  const yakin = confirm(
-    "YAKIN mau reset SEMUA transaksi? Tindakan ini permanen."
-  );
-  if (!yakin) return;
-
-  const { error } = await client.from("transactions").delete().neq("id", 0);
-  if (error) {
-    console.error(error);
-    alert("Gagal reset data.");
-    return;
-  }
-
-  await loadData();
-};
-
-/* ====== SUBMIT FORM TRANSAKSI ====== */
+/* ====== TAMBAH TRANSAKSI ====== */
 async function handleFormSubmit(e) {
   e.preventDefault();
 
@@ -160,7 +152,7 @@ async function handleFormSubmit(e) {
   const note = document.getElementById("noteInput").value || "";
 
   if (!date || !amount) {
-    alert("Tanggal dan nominal wajib diisi.");
+    alert("Tanggal & nominal wajib diisi.");
     return;
   }
 
@@ -173,22 +165,60 @@ async function handleFormSubmit(e) {
     return;
   }
 
-  // reset form (tanggal tetap)
   document.getElementById("transactionForm").reset();
   document.getElementById("dateInput").value = date;
 
   await loadData();
 }
 
+/* ====== DELETE SATU TRANSAKSI ====== */
+window.deleteTxn = async function (id) {
+  const yakin = confirm("Yakin ingin menghapus transaksi ini?");
+  if (!yakin) return;
+
+  const { error } = await client.from("transactions").delete().eq("id", id);
+  if (error) {
+    console.error(error);
+    alert("Gagal menghapus transaksi.");
+    return;
+  }
+
+  await loadData();
+};
+
+/* ====== RESET SEMUA RIWAYAT ====== */
+window.resetRiwayat = async function () {
+  const yakin = confirm("YAKIN mau hapus SEMUA riwayat transaksi?");
+  if (!yakin) return;
+
+  const { error } = await client.from("transactions").delete().neq("id", 0);
+  if (error) {
+    console.error(error);
+    alert("Gagal reset data.");
+    return;
+  }
+
+  await loadData();
+};
+
+/* ====== MODAL ====== */
+window.openRiwayat = function () {
+  document.getElementById("riwayatModal").style.display = "block";
+};
+
+window.closeRiwayat = function () {
+  document.getElementById("riwayatModal").style.display = "none";
+};
+
 /* ====== INIT ====== */
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
-  document.getElementById("dateInput").value = today;
+  const dInput = document.getElementById("dateInput");
+  if (dInput) dInput.value = today;
 
   startClock();
   loadData();
 
-  document
-    .getElementById("transactionForm")
-    .addEventListener("submit", handleFormSubmit);
+  const form = document.getElementById("transactionForm");
+  if (form) form.addEventListener("submit", handleFormSubmit);
 });
