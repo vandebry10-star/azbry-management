@@ -47,6 +47,7 @@ async function loadData() {
   const rows = data || [];
   updateSaldo(rows);
   renderHistory(rows);
+  updateStats(rows);
 }
 
 /* ====== UPDATE SALDO ====== */
@@ -59,6 +60,19 @@ function updateSaldo(rows) {
   document.getElementById("saldoValue").innerText = formatRupiah(saldo);
 }
 
+/* ====== STAT KECIL (Total transaksi & terakhir update) ====== */
+function updateStats(rows) {
+  document.getElementById("totalTransactions").innerText = rows.length;
+
+  if (!rows.length) {
+    document.getElementById("lastUpdated").innerText = "-";
+    return;
+  }
+
+  const latest = rows[0];
+  document.getElementById("lastUpdated").innerText = latest.date;
+}
+
 /* ====== RENDER RIWAYAT (MODAL) ====== */
 function renderHistory(rows) {
   const tbody = document.getElementById("historyList");
@@ -66,7 +80,7 @@ function renderHistory(rows) {
 
   if (!rows.length) {
     tbody.innerHTML =
-      '<tr><td colspan="5">Belum ada transaksi sama sekali.</td></tr>';
+      '<tr><td colspan="6">Belum ada transaksi sama sekali.</td></tr>';
     return;
   }
 
@@ -84,6 +98,11 @@ function renderHistory(rows) {
         <td class="${t.type === "income" ? "green" : "red"}">
           ${formatRupiah(t.amount)}
         </td>
+        <td>
+          <button class="btn btn-delete" onclick="deleteTxn(${t.id})">
+            Hapus
+          </button>
+        </td>
       </tr>
     `;
   });
@@ -96,6 +115,38 @@ window.openRiwayat = function () {
 
 window.closeRiwayat = function () {
   document.getElementById("riwayatModal").style.display = "none";
+};
+
+/* ====== DELETE SATU TRANSAKSI ====== */
+window.deleteTxn = async function (id) {
+  const yakin = confirm("Hapus transaksi ini?");
+  if (!yakin) return;
+
+  const { error } = await client.from("transactions").delete().eq("id", id);
+  if (error) {
+    console.error(error);
+    alert("Gagal menghapus transaksi.");
+    return;
+  }
+
+  await loadData();
+};
+
+/* ====== RESET SEMUA TRANSAKSI ====== */
+window.resetRiwayat = async function () {
+  const yakin = confirm(
+    "YAKIN mau reset SEMUA transaksi? Tindakan ini permanen."
+  );
+  if (!yakin) return;
+
+  const { error } = await client.from("transactions").delete().neq("id", 0);
+  if (error) {
+    console.error(error);
+    alert("Gagal reset data.");
+    return;
+  }
+
+  await loadData();
 };
 
 /* ====== SUBMIT FORM TRANSAKSI ====== */
@@ -126,13 +177,11 @@ async function handleFormSubmit(e) {
   document.getElementById("transactionForm").reset();
   document.getElementById("dateInput").value = date;
 
-  await loadData(); // refresh saldo + riwayat
-  alert("Transaksi tersimpan.");
+  await loadData();
 }
 
 /* ====== INIT ====== */
 document.addEventListener("DOMContentLoaded", () => {
-  // set default tanggal hari ini
   const today = new Date().toISOString().split("T")[0];
   document.getElementById("dateInput").value = today;
 
