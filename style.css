@@ -189,8 +189,8 @@ textarea {
 
 .stats-row {
   display: flex;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .mini-stat {
@@ -232,14 +232,14 @@ textarea {
 
 /* Tombol kiri */
 .float-history {
-  left: 14px;            /* ⬅ kiri */
+  right: 14px;            /* ⬅ kiri */
   background: #3df58a;
   color: #000;
 }
 
 /* Tombol kanan */
 .float-reset {
-  right: 14px;           /* ➡ kanan */
+  left: 14px;           /* ➡ kanan */
   background: #ff4444;
   color: #fff;
 }
