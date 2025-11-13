@@ -11,31 +11,33 @@
 <body>
   <div class="container">
 
-    <!-- ========= HEADER ========= -->
+    <!-- ===== TITLE DI TENGAH ATAS ===== -->
+    <h1 class="app-title">Azbry Finance</h1>
+
+    <!-- ========= HEADER (SALDO + WAKTU) ========= -->
     <header class="header">
       <!-- Saldo kiri -->
-      <div class="saldo-box card">
-        <h2>Saldo Kamu</h2>
-        <h1 id="saldoValue">Rp 0</h1>
-        <p>Total keseluruhan transaksi</p>
+      <div class="saldo-box card mini-card">
+        <p class="label-top">Saldo</p>
+        <h2 id="saldoValue">Rp 0</h2>
       </div>
 
       <!-- Waktu kanan -->
-      <div class="time-box card">
-        <h2>Waktu Sekarang</h2>
-        <p id="current-date">-</p>
-        <h1 id="current-time">--:--:--</h1>
+      <div class="time-box card mini-card">
+        <p class="label-top">Waktu</p>
+        <p id="current-date" class="date-mini">-</p>
+        <p id="current-time" class="time-mini">--:--:--</p>
       </div>
     </header>
 
-    <!-- ========= MAIN GRID ========= -->
+    <!-- ========= MAIN (FORM + INFO) ========= -->
     <main class="main">
 
       <!-- FORM TAMBAH TRANSAKSI -->
       <section class="card form-card">
-        <h2>Tambah Transaksi</h2>
+        <h2 class="section-title">Tambah Transaksi</h2>
         <p class="sub-text">
-          Catat pemasukan & pengeluaran. Data disimpan otomatis ke Supabase.
+          Catat pemasukan & pengeluaran. Data tersimpan di Supabase.
         </p>
 
         <form id="transactionForm">
@@ -89,7 +91,7 @@
 
       <!-- INFO / MOTIVASI -->
       <section class="card info-card">
-        <h2>Azbry Finance Note</h2>
+        <h2 class="section-title">Azbry Finance Note</h2>
         <p class="motiv-title">
           Keuangan rapi itu pelan-pelan, yang penting rutin.
         </p>
@@ -110,17 +112,13 @@
             <span id="lastUpdated">-</span>
           </div>
         </div>
-
-        <p class="small-text">
-          Catet aja dulu, analisa belakangan. Yang penting konsisten. 😎
-        </p>
       </section>
     </main>
   </div>
 
   <!-- ========= FLOATING BUTTONS ========= -->
   <button class="float-btn float-reset" onclick="resetRiwayat()">
-    🗑 Reset Semua
+    🗑 Reset
   </button>
 
   <button class="float-btn float-history" onclick="openRiwayat()">
