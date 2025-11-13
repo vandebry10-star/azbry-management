@@ -6,96 +6,143 @@
   <title>Azbry Finance</title>
 
   <link rel="stylesheet" href="style.css" />
-  <script defer src="script.js"></script>
-  <script defer src="app.js"></script>
 </head>
 
 <body>
-  <div class="container">
+  <div class="page-wrap">
 
-    <!-- HEADER -->
-    <header class="header">
-      <div class="saldo-box">
-        <p>Saldo Kamu</p>
-        <h1 id="saldoDisplay">Rp 0</h1>
+    <!-- ===== HEADER ATAS ===== -->
+    <header class="top-bar">
+
+      <div class="saldo-box card">
+        <p class="saldo-label">Saldo Kamu</p>
+        <h1 id="saldoValue">Rp 0</h1>
+        <p class="saldo-sub">Total keseluruhan transaksi</p>
       </div>
 
-      <div class="time-box">
-        <p id="tanggal"></p>
-        <p id="jam"></p>
+      <div class="datetime-box card">
+        <p class="datetime-label">Waktu Sekarang</p>
+        <div id="current-date" class="date-text"></div>
+        <div id="current-time" class="time-text"></div>
       </div>
+
     </header>
 
-    <!-- FORM INPUT -->
-    <section class="card input-card">
-      <h2>Tambah Transaksi</h2>
 
-      <label>Tanggal</label>
-      <input type="date" id="tanggalInput">
+    <!-- ===== KONTEN UTAMA ===== -->
+    <main class="main-content">
 
-      <label>Jenis</label>
-      <div class="radio-group">
-        <label><input type="radio" name="jenis" value="income" checked> Pemasukan</label>
-        <label><input type="radio" name="jenis" value="expense"> Pengeluaran</label>
-      </div>
+      <!-- FORM TAMBAH TRANSAKSI -->
+      <section class="card form-card">
+        <h2>Tambah Transaksi</h2>
+        <p class="card-sub">Catat pemasukan & pengeluaran. Data disimpan otomatis ke Supabase.</p>
 
-      <label>Nominal (Rp)</label>
-      <input type="number" id="nominalInput" placeholder="20000">
+        <form id="transactionForm">
 
-      <label>Kategori</label>
-      <input type="text" id="kategoriInput" placeholder="Makan, wifi, gaji, dll">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dateInput">Tanggal</label>
+              <input type="date" id="dateInput" required />
+            </div>
 
-      <label>Catatan</label>
-      <input type="text" id="catatanInput" placeholder="Opsional">
+            <div class="form-group">
+              <label for="typeInput">Jenis</label>
+              <select id="typeInput" required>
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+              </select>
+            </div>
+          </div>
 
-      <button class="btn-primary" onclick="tambahTransaksi()">Simpan Transaksi</button>
-    </section>
+          <div class="form-group">
+            <label for="amountInput">Nominal</label>
+            <input type="number" id="amountInput" min="0" placeholder="contoh: 25000" required />
+          </div>
 
-    <!-- LIST TRANSAKSI HARI INI -->
-    <section class="card">
-      <h2>Ringkasan Hari Ini</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Nominal</th>
-            <th>Jenis</th>
-            <th>Catatan</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="hariIniList">
-          <tr><td colspan="4" class="empty">Belum ada transaksi</td></tr>
-        </tbody>
-      </table>
-    </section>
+          <div class="form-group">
+            <label for="categoryInput">Kategori</label>
+            <input type="text" id="categoryInput" placeholder="Makan, gaji, wifi, game, dll" />
+          </div>
 
-    <!-- BUTTON FLOATING -->
-    <button class="float-btn" onclick="toggleRiwayat()">
-      📜 Riwayat
-    </button>
+          <div class="form-group">
+            <label for="noteInput">Catatan</label>
+            <textarea id="noteInput" rows="2" placeholder="Opsional"></textarea>
+          </div>
+
+          <button class="btn primary-btn" type="submit">
+            Simpan Transaksi
+          </button>
+
+        </form>
+      </section>
+
+
+      <!-- INFO PANEL BIAR TENGAH GA KOSONG -->
+      <section class="card info-card">
+        <h3>Azbry Finance Dashboard</h3>
+        <p>
+          • Cocok untuk catatan harian pribadi  
+          • Gunakan kategori yang rapi biar gampang dianalisa  
+          • Semua data tersimpan otomatis di database Supabase kamu
+        </p>
+
+        <div class="stats-row">
+          <div class="mini-stat">
+            <span class="label">Total Transaksi</span>
+            <span id="totalTransactions">0</span>
+          </div>
+          <div class="mini-stat">
+            <span class="label">Terakhir Update</span>
+            <span id="lastUpdated">-</span>
+          </div>
+        </div>
+
+        <p class="small-text">
+          Next update: grafik bulanan, dark neon animation, export CSV, dan mode analisa.
+        </p>
+      </section>
+
+    </main>
   </div>
 
-  <!-- MODAL RIWAYAT -->
-  <div class="modal" id="modalRiwayat">
-    <div class="modal-content">
-      <h2>Riwayat Transaksi</h2>
-      <table>
+
+  <!-- ===== FLOATING BUTTONS ===== -->
+  <button class="btn history-btn" onclick="openRiwayat()">📜 Riwayat</button>
+  <button class="btn reset-btn" onclick="resetRiwayat()">🗑 Reset Semua</button>
+
+
+  <!-- ===== MODAL RIWAYAT ===== -->
+  <div id="riwayatModal" class="modal-backdrop">
+    <div class="modal">
+
+      <div class="modal-header">
+        <h2>Riwayat Transaksi</h2>
+        <button class="btn ghost-btn" onclick="closeRiwayat()">Tutup</button>
+      </div>
+
+      <table class="table">
         <thead>
           <tr>
             <th>Tanggal</th>
             <th>Jenis</th>
             <th>Kategori</th>
+            <th>Catatan</th>
             <th>Nominal</th>
             <th>Aksi</th>
           </tr>
         </thead>
-        <tbody id="riwayatList"></tbody>
+        <tbody id="historyList">
+          <tr><td colspan="6">Memuat...</td></tr>
+        </tbody>
       </table>
 
-      <button class="btn-danger" onclick="resetSemua()">Hapus Semua Riwayat</button>
-      <button class="btn-secondary" onclick="toggleRiwayat()">Tutup</button>
     </div>
   </div>
+
+
+  <!-- ===== SCRIPT ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
