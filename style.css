@@ -236,3 +236,160 @@ textarea {
     max-width: 640px;
   }
 }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #0d0f17;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+}
+
+.container {
+  width: 90%;
+  margin: auto;
+  padding-bottom: 120px;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 30px;
+}
+
+.saldo-box h1 {
+  font-size: 50px;
+  font-weight: 700;
+  color: #44ff9a;
+  text-shadow: 0 0 12px #44ff9a88;
+}
+
+.time-box {
+  text-align: right;
+  font-size: 15px;
+  opacity: .8;
+}
+
+/* CARD */
+.card {
+  background: #11131c;
+  padding: 20px;
+  border-radius: 20px;
+  margin-top: 30px;
+  box-shadow: 0 0 20px #0006;
+  animation: fadeIn .5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+/* INPUT */
+input, select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #1a1c26;
+  color: #eee;
+  margin-bottom: 15px;
+}
+
+.radio-group label {
+  margin-right: 20px;
+}
+
+/* BUTTON */
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: #44ff9a;
+  border: none;
+  color: #000;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  background: #ff4e4e;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+}
+
+.btn-secondary {
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+  background: #333;
+  border: none;
+  border-radius: 12px;
+  color: white;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+th {
+  opacity: .7;
+  font-size: 13px;
+}
+
+td {
+  padding: 10px 5px;
+}
+
+.empty {
+  text-align: center;
+  opacity: .6;
+}
+
+/* FLOAT BUTTON */
+.float-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 18px 25px;
+  background: #44ff9a;
+  color: black;
+  border: none;
+  font-weight: bold;
+  border-radius: 40px;
+  box-shadow: 0 0 15px #44ff9a66;
+  cursor: pointer;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000a;
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  background: #11131c;
+  margin: 50px auto;
+  width: 90%;
+  padding: 20px;
+  border-radius: 20px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
