@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Azbry Finance Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05060a;
+      --card: #0b0f19;
+      --accent: #42ff9e;
+      --accent-soft: rgba(66, 255, 158, 0.14);
+      --text: #f5f7ff;
+      --muted: #9aa1c3;
+      --danger: #ff4f6b;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+      --radius-xl: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "SF Pro Text", "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #101425 0, #05060a 55%);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 32px 12px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background: linear-gradient(135deg, #05060a 0, #05060a 50%, #070a12 100%);
+      border-radius: 24px;
+      padding: 24px 20px 26px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(66, 255, 158, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow {
+      position: absolute;
+      inset: -120px;
+      background:
+        radial-gradient(circle at 10% 0, rgba(66,255,158,0.1), transparent 60%),
+        radial-gradient(circle at 90% 100%, rgba(78,167,255,0.12), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title h1 span.logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .title p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .badge-azbry {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(66, 255, 158, 0.35);
+      background: linear-gradient(135deg, rgba(66,255,158,0.12), transparent);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 820px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(66,255,158,0.1), transparent 60%),
+                  var(--card);
+      border-radius: var(--radius-xl);
+      padding: 16px 16px 18px;
+      border: 1px solid rgba(148, 163, 255, 0.16);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid rgba(66, 255, 158, 0.15);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-out;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 0.93rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+    }
+
+    .chip {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 255, 0.35);
+      color: var(--muted);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .summary-item {
+      background: rgba(10, 13, 25, 0.9);
+      border-radius: 14px;
+      padding: 10px 10px 11px;
+      border: 1px solid rgba(148, 163, 255, 0.25);
+    }
+
+    .summary-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .summary-value {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .summary-value.income {
+      color: var(--accent);
+    }
+
+    .summary-value.expense {
+      color: var(--danger);
+    }
+
+    .summary-value.balance {
+      color: #fefce8;
+    }
+
+    .summary-period {
+      margin-top: 6px;
+      font-size: 0.74rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    select {
+      background: #050814;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 255, 0.35);
+      padding: 4px 8px;
+      color: var(--text);
+      font-size: 0.74rem;
+    }
+
+    /* Form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 10px;
+      margin-bottom: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    input, textarea {
+      background: #050814;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 255, 0.35);
+      padding: 7px 9px;
+      color: var(--text);
+      font-size: 0.86rem;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(66, 255, 158, 0.3);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 48px;
+    }
+
+    .type-toggle {
+      display: flex;
+      gap: 6px;
+      background: #050814;
+      border-radius: 12px;
+      padding: 3px;
+      border: 1px solid rgba(148, 163, 255, 0.35);
+    }
+
+    .type-toggle button {
+      flex: 1;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 6px 0;
+      cursor: pointer;
+    }
+
+    .type-toggle button.active-income {
+      background: rgba(66, 255, 158, 0.16);
+      color: var(--accent);
+    }
+
+    .type-toggle button.active-expense {
+      background: rgba(255, 79, 107, 0.18);
+      color: var(--danger);
+    }
+
+    .btn-submit {
+      margin-top: 4px;
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), #8bffce);
+      color: #020617;
+      padding: 9px 0;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(66, 255, 158, 0.3);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+      box-shadow: 0 8px 18px rgba(66, 255, 158, 0.2);
+    }
+
+    /* Table / List */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .toolbar input {
+      max-width: 120px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th, td {
+      padding: 6px 6px;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.9);
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+
+    tbody tr:hover {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .amount.income { color: var(--accent); }
+    .amount.expense { color: var(--danger); }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 16px 4px;
+    }
+
+    .tag {
+      display: inline-flex;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 255, 0.5);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="glow"></div>
+
+    <header class="app-header">
+      <div class="title">
+        <h1>
+          <span class="logo-dot"></span>
+          Azbry Finance Manager
+        </h1>
+        <p>Catat pemasukan & pengeluaran harian biar uang nggak hilang entah ke mana.</p>
+      </div>
+      <div class="badge-azbry">
+        <span>AZBRY</span>
+        <span>FINANCE</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- Kiri: Ringkasan + Form -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Ringkasan</div>
+          <div class="chip" id="todayLabel"></div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="summary-label">Total Masuk</div>
+            <div class="summary-value income" id="totalIncome">Rp 0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Total Keluar</div>
+            <div class="summary-value expense" id="totalExpense">Rp 0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Saldo</div>
+            <div class="summary-value balance" id="balance">Rp 0</div>
+          </div>
+        </div>
+
+        <div class="summary-period">
+          <span>Periode tampilan: <span id="periodLabel">Semua transaksi</span></span>
+          <select id="filterPeriod">
+            <option value="all">Semua</option>
+            <option value="month">Bulan ini</option>
+            <option value="today">Hari ini</option>
+          </select>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid rgba(30,41,59,0.9); margin: 14px 0 10px;" />
+
+        <div class="card-header" style="margin-bottom:8px;">
+          <div class="card-title">Tambah Transaksi</div>
+          <span class="chip">Supabase • online database</span>
+        </div>
+
+        <form id="transactionForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Tanggal</label>
+              <input type="date" id="dateInput" required />
+            </div>
+            <div class="form-group">
+              <label>Jenis</label>
+              <div class="type-toggle">
+                <button type="button" id="btnIncome" class="active-income">Pemasukan</button>
+                <button type="button" id="btnExpense">Pengeluaran</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Nominal (Rp)</label>
+              <input type="number" id="amountInput" min="0" step="100" required />
+            </div>
+            <div class="form-group">
+              <label>Kategori</label>
+              <input type="text" id="categoryInput" placeholder="Gaji, makan, langganan, dll" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Catatan</label>
+            <textarea id="noteInput" placeholder="Opsional: misalnya 'makan malam', 'bayar wifi'"></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Simpan Transaksi</button>
+        </form>
+      </section>
+
+      <!-- Kanan: Daftar transaksi -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Daftar Transaksi</div>
+          <div class="chip" id="countLabel">0 transaksi</div>
+        </div>
+
+        <div class="toolbar">
+          <span>Filter kategori:</span>
+          <input type="text" id="searchCategory" placeholder="mis. makan, gaji" />
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Jenis</th>
+                <th>Kategori</th>
+                <th>Catatan</th>
+                <th style="text-align:right;">Nominal</th>
+              </tr>
+            </thead>
+            <tbody id="transactionBody">
+              <tr>
+                <td colspan="5" class="empty-state">
+                  Belum ada transaksi. Tambahkan dari form di sebelah kiri.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer-note">
+          Data disimpan di Supabase (PostgreSQL).  
+          Kalau mau backup, export dari dashboard Supabase.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Supabase client -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = supabase;
+
+    // TODO: GANTI DENGAN punyamu sendiri
+    const SUPABASE_URL = 'https://mxmnmujsqhzrmivdiqvk.supabase.co';      // <- ganti
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14bW5tdWpzcWh6cm1pdmRpcXZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMjYyMzAsImV4cCI6MjA3ODYwMjIzMH0.BZHHWmSXPwuF1jtIxd4tvIFHke7c5QyiP55lE1oBNVo';      // <- ganti
+
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let transactions = [];
+
+    const todayLabel = document.getElementById("todayLabel");
+    const periodLabel = document.getElementById("periodLabel");
+    const filterPeriod = document.getElementById("filterPeriod");
+    const totalIncomeEl = document.getElementById("totalIncome");
+    const totalExpenseEl = document.getElementById("totalExpense");
+    const balanceEl = document.getElementById("balance");
+    const transactionBody = document.getElementById("transactionBody");
+    const countLabel = document.getElementById("countLabel");
+    const searchCategory = document.getElementById("searchCategory");
+
+    const dateInput = document.getElementById("dateInput");
+    const amountInput = document.getElementById("amountInput");
+    const categoryInput = document.getElementById("categoryInput");
+    const noteInput = document.getElementById("noteInput");
+    const btnIncome = document.getElementById("btnIncome");
+    const btnExpense = document.getElementById("btnExpense");
+    const form = document.getElementById("transactionForm");
+
+    let currentType = "income";
+
+    (function init() {
+      const now = new Date();
+      todayLabel.textContent = now.toLocaleDateString("id-ID", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+      dateInput.valueAsDate = now;
+
+      fetchTransactions();
+    })();
+
+    async function fetchTransactions() {
+      const { data, error } = await client
+        .from('transactions')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        alert('Gagal mengambil data dari database');
+        return;
+      }
+
+      transactions = data || [];
+      render();
+    }
+
+    function setType(type) {
+      currentType = type;
+      if (type === "income") {
+        btnIncome.classList.add("active-income");
+        btnExpense.classList.remove("active-expense");
+      } else {
+        btnExpense.classList.add("active-expense");
+        btnIncome.classList.remove("active-income");
+      }
+    }
+
+    btnIncome.addEventListener("click", () => setType("income"));
+    btnExpense.addEventListener("click", () => setType("expense"));
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const date = dateInput.value;
+      const amount = Number(amountInput.value || 0);
+      const category = (categoryInput.value || "").trim() || "-";
+      const note = (noteInput.value || "").trim();
+
+      if (!date || !amount) return;
+
+      const payload = { date, type: currentType, amount, category, note };
+
+      const { data, error } = await client
+        .from('transactions')
+        .insert([payload])
+        .select()
+        .single();
+
+      if (error) {
+        console.error(error);
+        alert('Gagal menyimpan transaksi');
+        return;
+      }
+
+      transactions.unshift(data);
+      amountInput.value = "";
+      noteInput.value = "";
+      categoryInput.value = "";
+      render();
+    });
+
+    filterPeriod.addEventListener("change", render);
+    searchCategory.addEventListener("input", render);
+
+    function formatCurrency(num) {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+      }).format(num);
+    }
+
+    function filterByPeriod(list) {
+      const mode = filterPeriod.value;
+      const now = new Date();
+      if (mode === "today") {
+        periodLabel.textContent = "Hari ini";
+        const todayStr = now.toISOString().slice(0, 10);
+        return list.filter((t) => t.date === todayStr);
+      }
+      if (mode === "month") {
+        periodLabel.textContent = "Bulan ini";
+        const ym = now.toISOString().slice(0, 7);
+        return list.filter((t) => (t.date || '').slice(0, 7) === ym);
+      }
+      periodLabel.textContent = "Semua transaksi";
+      return list;
+    }
+
+    function render() {
+      let visible = [...transactions];
+
+      visible = filterByPeriod(visible);
+
+      const q = (searchCategory.value || "").trim().toLowerCase();
+      if (q) {
+        visible = visible.filter((t) =>
+          (t.category || '').toLowerCase().includes(q)
+        );
+      }
+
+      visible.sort((a, b) => b.id - a.id);
+
+      let income = 0;
+      let expense = 0;
+      for (const t of visible) {
+        if (t.type === "income") income += t.amount;
+        else expense += t.amount;
+      }
+      const balance = income - expense;
+
+      totalIncomeEl.textContent = formatCurrency(income);
+      totalExpenseEl.textContent = formatCurrency(expense);
+      balanceEl.textContent = formatCurrency(balance);
+      countLabel.textContent = `${visible.length} transaksi`;
+
+      if (!visible.length) {
+        transactionBody.innerHTML =
+          '<tr><td colspan="5" class="empty-state">Belum ada transaksi untuk filter ini.</td></tr>';
+        return;
+      }
+
+      transactionBody.innerHTML = visible
+        .map((t) => {
+          const dateStr = new Date((t.date || '') + "T00:00:00").toLocaleDateString(
+            "id-ID",
+            { day: "2-digit", month: "short", year: "numeric" }
+          );
+          return `
+          <tr>
+            <td>${dateStr}</td>
+            <td><span class="tag">${t.type === "income" ? "Masuk" : "Keluar"}</span></td>
+            <td>${t.category || '-'}</td>
+            <td>${t.note || "-"}</td>
+            <td style="text-align:right;" class="amount ${t.type}">
+              ${t.type === "income" ? "+" : "-"}${formatCurrency(t.amount).replace("Rp", "")}
+            </td>
+          </tr>`;
+        })
+        .join("");
+    }
+  </script>
+</body>
+              </html>
