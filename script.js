@@ -48,7 +48,6 @@ async function loadData() {
   updateSaldo(rows);
   renderHistory(rows);
   updateStats(rows);
-
   renderToday(rows);
 }
 
@@ -65,21 +64,26 @@ function updateSaldo(rows) {
 
 /* ====== STAT SUMMARY ====== */
 function updateStats(rows) {
-  document.getElementById("totalTransactions").innerText = rows.length;
+  const totalEl = document.getElementById("totalTransactions");
+  const lastEl = document.getElementById("lastUpdated");
+
+  if (totalEl) totalEl.innerText = rows.length;
 
   if (!rows.length) {
-    document.getElementById("lastUpdated").innerText = "-";
+    if (lastEl) lastEl.innerText = "-";
     return;
   }
 
   const latest = rows[0];
-  document.getElementById("lastUpdated").innerText = latest.date;
+  if (lastEl) lastEl.innerText = latest.date;
 }
 
 /* ====== RINGKASAN HARI INI ====== */
 function renderToday(rows) {
   const today = new Date().toISOString().split("T")[0];
-  const tbody = document.getElementById("hariIniTable") || document.getElementById("hariIniList");
+  const tbody =
+    document.getElementById("hariIniTable") ||
+    document.getElementById("hariIniList");
   if (!tbody) return;
 
   const todayRows = rows.filter((t) => t.date === today);
@@ -111,6 +115,8 @@ function renderToday(rows) {
 /* ====== RENDER RIWAYAT (MODAL) ====== */
 function renderHistory(rows) {
   const tbody = document.getElementById("historyList");
+  if (!tbody) return;
+
   tbody.innerHTML = "";
 
   if (!rows.length) {
@@ -147,7 +153,12 @@ async function handleFormSubmit(e) {
 
   const date = document.getElementById("dateInput").value;
   const type = document.getElementById("typeInput").value;
-  const amount = Number(document.getElementById("amountInput").value || 0);
+
+  const amountInput = document.getElementById("amountInput");
+  const rawFromData = amountInput.dataset.raw || "";
+  const cleaned = rawFromData || amountInput.value.replace(/\D/g, "");
+  const amount = Number(cleaned || 0);
+
   const category = document.getElementById("categoryInput").value || "";
   const note = document.getElementById("noteInput").value || "";
 
@@ -203,11 +214,13 @@ window.resetRiwayat = async function () {
 
 /* ====== MODAL ====== */
 window.openRiwayat = function () {
-  document.getElementById("riwayatModal").style.display = "block";
+  const m = document.getElementById("riwayatModal");
+  if (m) m.style.display = "block";
 };
 
 window.closeRiwayat = function () {
-  document.getElementById("riwayatModal").style.display = "none";
+  const m = document.getElementById("riwayatModal");
+  if (m) m.style.display = "none";
 };
 
 /* ====== INIT ====== */
@@ -215,6 +228,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
   const dInput = document.getElementById("dateInput");
   if (dInput) dInput.value = today;
+
+  // AUTO FORMAT NOMINAL (10000 -> 10.000)
+  const amountInput = document.getElementById("amountInput");
+  if (amountInput) {
+    amountInput.addEventListener("input", () => {
+      let raw = amountInput.value.replace(/\D/g, ""); // buang semua selain angka
+
+      if (!raw) {
+        amountInput.dataset.raw = "";
+        amountInput.value = "";
+        return;
+      }
+
+      // simpan angka murni ke dataset
+      amountInput.dataset.raw = raw;
+
+      // format jadi 10.000 / 1.000.000
+      amountInput.value = raw.replace(/\B?(?=(\d{3})+(?!\d))/g, ".");
+    });
+  }
 
   startClock();
   loadData();
