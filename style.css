@@ -231,13 +231,13 @@ textarea {
 }
 
 .float-reset {
-  bottom: 78px;
+  bottom: 20px;
   background: #ff4444;
   color: #fff;
 }
 
 .float-history {
-  bottom: 28px;
+  bottom: 20px;
   background: #3df58a;
   color: #000;
 }
