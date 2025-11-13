@@ -4,143 +4,98 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Azbry Finance</title>
+
   <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+  <script defer src="app.js"></script>
 </head>
 
 <body>
-  <div class="bg-glow"></div>
+  <div class="container">
 
-  <div class="page-wrap">
-    <!-- TOP BAR -->
-    <header class="top-bar">
-      <div class="saldo-box card">
-        <p class="saldo-label">Saldo Kamu</p>
-        <h1 id="saldoValue">Rp 0</h1>
-        <p class="saldo-sub">Ringkasan total semua transaksi</p>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="saldo-box">
+        <p>Saldo Kamu</p>
+        <h1 id="saldoDisplay">Rp 0</h1>
       </div>
 
-      <div class="datetime-box card">
-        <p class="datetime-label">Waktu Sekarang</p>
-        <div id="current-date" class="date-text"></div>
-        <div id="current-time" class="time-text"></div>
+      <div class="time-box">
+        <p id="tanggal"></p>
+        <p id="jam"></p>
       </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-      <!-- FORM TRANSAKSI -->
-      <section class="card form-card">
-        <h2>Tambah Transaksi</h2>
-        <p class="card-sub">
-          Catat pemasukan & pengeluaran harian. Data langsung tersimpan di Supabase.
-        </p>
-        <form id="transactionForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="dateInput">Tanggal</label>
-              <input type="date" id="dateInput" required />
-            </div>
-            <div class="form-group">
-              <label for="typeInput">Jenis</label>
-              <select id="typeInput" required>
-                <option value="income">Pemasukan</option>
-                <option value="expense">Pengeluaran</option>
-              </select>
-            </div>
-          </div>
+    <!-- FORM INPUT -->
+    <section class="card input-card">
+      <h2>Tambah Transaksi</h2>
 
-          <div class="form-group">
-            <label for="amountInput">Nominal (Rp)</label>
-            <input type="number" id="amountInput" min="0" required />
-          </div>
+      <label>Tanggal</label>
+      <input type="date" id="tanggalInput">
 
-          <div class="form-group">
-            <label for="categoryInput">Kategori</label>
-            <input
-              type="text"
-              id="categoryInput"
-              placeholder="Gaji, makan, wifi, dll"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="noteInput">Catatan</label>
-            <textarea
-              id="noteInput"
-              rows="2"
-              placeholder="Opsional, misal: bayar kos, ngopi, dll"
-            ></textarea>
-          </div>
-
-          <button type="submit" class="btn primary-btn">
-            ✅ Simpan Transaksi
-          </button>
-        </form>
-      </section>
-
-      <!-- INFO CARD / FILLER -->
-      <section class="card info-card">
-        <h3>Azbry Finance Dashboard</h3>
-        <p>
-          • Fokus di disiplin nyatat harian, bukan seberapa besar nominalnya dulu. <br />
-          • Gunakan kategori yang konsisten (makan, kos, langganan, dll) biar gampang dianalisa. <br />
-          • Semua data disimpan di Supabase khusus project ini, jadi aman buat dipakai pribadi.
-        </p>
-        <div class="stats-row">
-          <div class="mini-stat">
-            <span class="label">Total Transaksi</span>
-            <span id="totalTransactions">0</span>
-          </div>
-          <div class="mini-stat">
-            <span class="label">Terakhir Update</span>
-            <span id="lastUpdated">-</span>
-          </div>
-        </div>
-        <p class="small-text">
-          Next level nanti bisa ditambah grafik pemasukan / pengeluaran per bulan,
-          export ke CSV, dan lain-lain.
-        </p>
-      </section>
-    </main>
-  </div>
-
-  <!-- FLOATING BUTTONS -->
-  <button class="btn history-btn" onclick="openRiwayat()">
-    📜 Riwayat Transaksi
-  </button>
-
-  <button class="btn reset-btn" onclick="resetRiwayat()">
-    🗑 Reset Semua
-  </button>
-
-  <!-- MODAL RIWAYAT -->
-  <div id="riwayatModal" class="modal-backdrop">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Riwayat Transaksi</h2>
-        <button class="btn ghost-btn" onclick="closeRiwayat()">Tutup</button>
+      <label>Jenis</label>
+      <div class="radio-group">
+        <label><input type="radio" name="jenis" value="income" checked> Pemasukan</label>
+        <label><input type="radio" name="jenis" value="expense"> Pengeluaran</label>
       </div>
 
-      <table class="table">
+      <label>Nominal (Rp)</label>
+      <input type="number" id="nominalInput" placeholder="20000">
+
+      <label>Kategori</label>
+      <input type="text" id="kategoriInput" placeholder="Makan, wifi, gaji, dll">
+
+      <label>Catatan</label>
+      <input type="text" id="catatanInput" placeholder="Opsional">
+
+      <button class="btn-primary" onclick="tambahTransaksi()">Simpan Transaksi</button>
+    </section>
+
+    <!-- LIST TRANSAKSI HARI INI -->
+    <section class="card">
+      <h2>Ringkasan Hari Ini</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nominal</th>
+            <th>Jenis</th>
+            <th>Catatan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="hariIniList">
+          <tr><td colspan="4" class="empty">Belum ada transaksi</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- BUTTON FLOATING -->
+    <button class="float-btn" onclick="toggleRiwayat()">
+      📜 Riwayat
+    </button>
+  </div>
+
+  <!-- MODAL RIWAYAT -->
+  <div class="modal" id="modalRiwayat">
+    <div class="modal-content">
+      <h2>Riwayat Transaksi</h2>
+      <table>
         <thead>
           <tr>
             <th>Tanggal</th>
             <th>Jenis</th>
             <th>Kategori</th>
-            <th>Catatan</th>
             <th>Nominal</th>
             <th>Aksi</th>
           </tr>
         </thead>
-        <tbody id="historyList">
-          <tr><td colspan="6">Loading...</td></tr>
-        </tbody>
+        <tbody id="riwayatList"></tbody>
       </table>
+
+      <button class="btn-danger" onclick="resetSemua()">Hapus Semua Riwayat</button>
+      <button class="btn-secondary" onclick="toggleRiwayat()">Tutup</button>
     </div>
   </div>
 
-  <!-- SCRIPT -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js"></script>
 </body>
 </html>
