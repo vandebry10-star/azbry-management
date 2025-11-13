@@ -4,65 +4,100 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Azbry Finance Dashboard</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
   <div class="container">
 
-    <!-- ================= HEADER ================= -->
+    <!-- ========= HEADER ========= -->
     <header class="header">
+      <!-- Saldo kiri -->
       <div class="saldo-box card">
         <h2>Saldo Kamu</h2>
-        <h1 id="saldoDisplay">Rp 0</h1>
-        <p class="small">Total keseluruhan transaksi</p>
+        <h1 id="saldoValue">Rp 0</h1>
+        <p>Total keseluruhan transaksi</p>
       </div>
 
+      <!-- Waktu kanan -->
       <div class="time-box card">
         <h2>Waktu Sekarang</h2>
-        <p id="currentDate">-</p>
-        <h1 id="currentTime">--:--:--</h1>
+        <p id="current-date">-</p>
+        <h1 id="current-time">--:--:--</h1>
       </div>
     </header>
 
-    <!-- ================= MAIN ================= -->
+    <!-- ========= MAIN GRID ========= -->
     <main class="main">
-      
-      <!-- ========== FORM TRANSAKSI ========== -->
+
+      <!-- FORM TAMBAH TRANSAKSI -->
       <section class="card form-card">
         <h2>Tambah Transaksi</h2>
-        <p class="sub-text">Catat pemasukan & pengeluaran. Data disimpan otomatis ke Supabase.</p>
+        <p class="sub-text">
+          Catat pemasukan & pengeluaran. Data disimpan otomatis ke Supabase.
+        </p>
 
-        <label>Tanggal</label>
-        <input type="date" id="dateInput" />
+        <form id="transactionForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dateInput">Tanggal</label>
+              <input type="date" id="dateInput" required />
+            </div>
 
-        <label>Jenis</label>
-        <select id="typeInput">
-          <option value="income">Pemasukan</option>
-          <option value="expense">Pengeluaran</option>
-        </select>
+            <div class="form-group">
+              <label for="typeInput">Jenis</label>
+              <select id="typeInput" required>
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+              </select>
+            </div>
+          </div>
 
-        <label>Nominal</label>
-        <input type="number" id="amountInput" placeholder="contoh: 25000" />
+          <div class="form-group">
+            <label for="amountInput">Nominal</label>
+            <input
+              type="number"
+              id="amountInput"
+              min="0"
+              placeholder="contoh: 25000"
+              required
+            />
+          </div>
 
-        <label>Kategori</label>
-        <input type="text" id="categoryInput" placeholder="Makan, gaji, wifi, game, dll" />
+          <div class="form-group">
+            <label for="categoryInput">Kategori</label>
+            <input
+              type="text"
+              id="categoryInput"
+              placeholder="Makan, gaji, wifi, game, dll"
+            />
+          </div>
 
-        <label>Catatan</label>
-        <textarea id="noteInput" placeholder="Opsional"></textarea>
+          <div class="form-group">
+            <label for="noteInput">Catatan</label>
+            <textarea
+              id="noteInput"
+              rows="2"
+              placeholder="Opsional"
+            ></textarea>
+          </div>
 
-        <button id="saveBtn" class="btn-primary">Simpan Transaksi</button>
+          <button type="submit" class="btn-primary">Simpan Transaksi</button>
+        </form>
       </section>
 
-      <!-- ========== INFO / MOTIVASI ========== -->
+      <!-- INFO / MOTIVASI -->
       <section class="card info-card">
         <h2>Azbry Finance Note</h2>
-        <p class="motiv-title">Keuangan rapi itu pelan-pelan, yang penting rutin.</p>
+        <p class="motiv-title">
+          Keuangan rapi itu pelan-pelan, yang penting rutin.
+        </p>
 
         <ul class="motivation-list">
           <li>Fokus nulis tiap hari, bukan besar kecil nominal.</li>
           <li>Yang penting tau uang masuk & keluar ke mana.</li>
-          <li>Saldo naik pelan-pelan jauh lebih keren dari nggak ke-track.</li>
+          <li>Saldo naik pelan-pelan lebih keren dari nggak ke-track.</li>
         </ul>
 
         <div class="stats-row">
@@ -70,7 +105,6 @@
             <span class="label">Total Transaksi</span>
             <span id="totalTransactions">0</span>
           </div>
-
           <div class="mini-stat">
             <span class="label">Terakhir Update</span>
             <span id="lastUpdated">-</span>
@@ -81,18 +115,46 @@
           Catet aja dulu, analisa belakangan. Yang penting konsisten. 😎
         </p>
       </section>
-
     </main>
-
-    <!-- ================= FOOTER BUTTONS ================= -->
-    <footer class="footer-btns">
-      <button id="resetBtn" class="btn-danger">🗑 Reset Semua</button>
-      <button id="historyBtn" class="btn-secondary">📜 Riwayat</button>
-    </footer>
-
   </div>
 
+  <!-- ========= FLOATING BUTTONS ========= -->
+  <button class="float-btn float-reset" onclick="resetRiwayat()">
+    🗑 Reset Semua
+  </button>
+
+  <button class="float-btn float-history" onclick="openRiwayat()">
+    📜 Riwayat
+  </button>
+
+  <!-- ========= MODAL RIWAYAT ========= -->
+  <div id="riwayatModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Riwayat Transaksi</h2>
+        <button class="close-btn" onclick="closeRiwayat()">✕</button>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Jenis</th>
+            <th>Kategori</th>
+            <th>Catatan</th>
+            <th>Nominal</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="historyList">
+          <tr><td colspan="6">Memuat...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ========= SCRIPT ========= -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>
