@@ -63,6 +63,31 @@ body {
   flex: 0.8;
 }
 
+.info-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* bikin isi turun ke tengah card */
+}
+
+/* list motivasi */
+.motivation-list {
+  margin-top: 8px;
+  margin-left: 18px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.motivation-list li::marker {
+  color: #00ffa8; /* bullet hijau neon */
+}
+
+.motiv-title {
+  font-size: 14px;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
 /* ===== SALDO BOX ===== */
 .saldo-label {
   font-size: 14px;
