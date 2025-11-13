@@ -78,7 +78,7 @@ function updateStats(rows) {
   if (lastEl) lastEl.innerText = latest.date;
 }
 
-/* ====== RINGKASAN HARI INI ====== */
+/* ====== RINGKASAN HARI INI (KALAU ADA TABEL HARI INI) ====== */
 function renderToday(rows) {
   const today = new Date().toISOString().split("T")[0];
   const tbody =
@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const amountInput = document.getElementById("amountInput");
   if (amountInput) {
     amountInput.addEventListener("input", () => {
-      let raw = amountInput.value.replace(/\D/g, ""); // buang semua selain angka
+      let raw = amountInput.value.replace(/\D/g, ""); // buang non-angka
 
       if (!raw) {
         amountInput.dataset.raw = "";
@@ -241,11 +241,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // simpan angka murni ke dataset
+      // simpan angka murni
       amountInput.dataset.raw = raw;
 
-      // format jadi 10.000 / 1.000.000
-      amountInput.value = raw.replace(/\B?(?=(\d{3})+(?!\d))/g, ".");
+      // format tampilan pakai titik
+      amountInput.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     });
   }
 
