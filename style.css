@@ -447,3 +447,69 @@ tbody tr:hover {
   display: flex;
   justify-content: flex-end;
 }
+/* ====== SPACING UPGRADE ====== */
+
+/* Kasih jarak antar semua SECTION besar */
+section {
+    margin-bottom: 32px;
+}
+
+/* Container utama lebih lega */
+.container {
+    padding: 22px;
+    gap: 28px;
+}
+
+/* Box summary */
+.summary-box {
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+/* Box form tambah transaksi */
+.form-box {
+    padding: 24px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+}
+
+/* Input group spacing */
+.input-group {
+    margin-bottom: 18px;
+}
+
+/* Judul TITTLE lebih jarak dari atas */
+.section-title {
+    margin-bottom: 16px !important;
+}
+
+/* Button besar, jarak atas bawah */
+button {
+    margin-top: 10px;
+    margin-bottom: 14px;
+}
+
+/* Daftar transaksi */
+.transaction-list {
+    padding: 22px;
+    margin-top: 22px;
+}
+
+/* Baris transaksi */
+.transaction-row {
+    padding: 16px 12px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+}
+
+/* Filter bar */
+.filter-bar {
+    padding: 14px;
+    margin-bottom: 18px;
+}
+
+/* Footer */
+.footer {
+    margin-top: 40px;
+    padding: 20px 10px;
+}
