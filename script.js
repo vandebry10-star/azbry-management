@@ -1,218 +1,110 @@
-const { createClient } = supabase;
+/* ====== SETTING SUPABASE ====== */
+const SUPABASE_URL = "https://mxmnmujsqhzrmivdiqvk.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14bW5tdWpzcWh6cm1pdmRpcXZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMjYyMzAsImV4cCI6MjA3ODYwMjIzMH0.BZHHWmSXPwuF1jtIxd4tvIFHke7c5QyiP55lE1oBNVo";
 
-const SUPABASE_URL = 'https://mxmnmujsqhzrmivdiqvk.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14bW5tdWpzcWh6cm1pdmRpcXZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMjYyMzAsImV4cCI6MjA3ODYwMjIzMH0.BZHHWmSXPwuF1jtIxd4tvIFHke7c5QyiP55lE1oBNVo';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* ====== JAM REALTIME ====== */
+setInterval(() => {
+    const now = new Date();
 
-let transactions = [];
+    document.getElementById("current-date").innerText =
+        now.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        });
 
-const todayLabel = document.getElementById('todayLabel');
-const periodLabel = document.getElementById('periodLabel');
-const filterPeriod = document.getElementById('filterPeriod');
-const totalIncomeEl = document.getElementById('totalIncome');
-const totalExpenseEl = document.getElementById('totalExpense');
-const balanceEl = document.getElementById('balance');
-const transactionBody = document.getElementById('transactionBody');
-const countLabel = document.getElementById('countLabel');
-const searchCategory = document.getElementById('searchCategory');
-const refreshBtn = document.getElementById('refreshBtn');
+    document.getElementById("current-time").innerText =
+        now.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        });
+}, 1000);
 
-const dateInput = document.getElementById('dateInput');
-const amountInput = document.getElementById('amountInput');
-const categoryInput = document.getElementById('categoryInput');
-const noteInput = document.getElementById('noteInput');
-const btnIncome = document.getElementById('btnIncome');
-const btnExpense = document.getElementById('btnExpense');
-const form = document.getElementById('transactionForm');
+/* ====== LOAD DATA ====== */
+async function loadData() {
+    const { data } = await supabase
+        .from("transactions")
+        .select("*")
+        .order("id", { ascending: false });
 
-let currentType = 'income';
-
-(function init() {
-  const now = new Date();
-  todayLabel.textContent = now.toLocaleDateString('id-ID', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-  dateInput.valueAsDate = now;
-
-  fetchTransactions();
-})();
-
-async function fetchTransactions() {
-  transactionBody.innerHTML = '<tr><td colspan="6" class="empty-state">Memuat data dari Supabase...</td></tr>';
-
-  const { data, error } = await client
-    .from('transactions')
-    .select('*')
-    .order('date', { ascending: false })
-    .order('id', { ascending: false });
-
-  if (error) {
-    console.error(error);
-    transactionBody.innerHTML = '<tr><td colspan="6" class="empty-state">Gagal mengambil data. Cek koneksi atau konfigurasi Supabase.</td></tr>';
-    return;
-  }
-
-  transactions = data || [];
-  render();
+    updateSaldo(data);
+    loadToday(data);
+    loadHistory(data);
 }
 
-function setType(type) {
-  currentType = type;
-  if (type === 'income') {
-    btnIncome.classList.add('active-income');
-    btnExpense.classList.remove('active-expense');
-  } else {
-    btnExpense.classList.add('active-expense');
-    btnIncome.classList.remove('active-income');
-  }
+/* ====== HITUNG SALDO ====== */
+function updateSaldo(data) {
+    let saldo = 0;
+
+    data.forEach((t) => {
+        if (t.type === "income") saldo += t.amount;
+        else saldo -= t.amount;
+    });
+
+    document.getElementById("saldoValue").innerText =
+        "Rp " + saldo.toLocaleString("id-ID");
 }
 
-btnIncome.addEventListener('click', () => setType('income'));
-btnExpense.addEventListener('click', () => setType('expense'));
-refreshBtn.addEventListener('click', () => fetchTransactions());
+/* ====== TRANSAKSI HARI INI ====== */
+function loadToday(data) {
+    const today = new Date().toISOString().split("T")[0];
+    const list = document.getElementById("todayTransactions");
+    list.innerHTML = "";
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const date = dateInput.value;
-  const amount = Number(amountInput.value || 0);
-  const category = (categoryInput.value || '').trim() || '-';
-  const note = (noteInput.value || '').trim();
+    const filtered = data.filter((t) => t.date === today);
 
-  if (!date || !amount) return;
-
-  const payload = { date, type: currentType, amount, category, note };
-
-  const { data, error } = await client
-    .from('transactions')
-    .insert([payload])
-    .select()
-    .single();
-
-  if (error) {
-    console.error(error);
-    alert('Gagal menyimpan transaksi');
-    return;
-  }
-
-  transactions.unshift(data);
-  amountInput.value = '';
-  noteInput.value = '';
-  categoryInput.value = '';
-  render();
-});
-
-filterPeriod.addEventListener('change', render);
-searchCategory.addEventListener('input', render);
-
-transactionBody.addEventListener('click', async (e) => {
-  const btn = e.target.closest('[data-action]');
-  if (!btn) return;
-
-  const action = btn.getAttribute('data-action');
-  const id = btn.getAttribute('data-id');
-  if (!id) return;
-
-  if (action === 'delete') {
-    if (!confirm('Yakin hapus transaksi ini?')) return;
-
-    const { error } = await client
-      .from('transactions')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error(error);
-      alert('Gagal menghapus transaksi');
-      return;
+    if (filtered.length === 0) {
+        list.innerHTML = `<tr><td colspan="3">Belum ada transaksi hari ini</td></tr>`;
+        return;
     }
 
-    transactions = transactions.filter(t => String(t.id) !== String(id));
-    render();
-  }
-});
-
-function formatCurrency(num) {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(num);
-}
-
-function filterByPeriod(list) {
-  const mode = filterPeriod.value;
-  const now = new Date();
-  if (mode === 'today') {
-    periodLabel.textContent = 'Hari ini';
-    const todayStr = now.toISOString().slice(0, 10);
-    return list.filter((t) => t.date === todayStr);
-  }
-  if (mode === 'month') {
-    periodLabel.textContent = 'Bulan ini';
-    const ym = now.toISOString().slice(0, 7);
-    return list.filter((t) => (t.date || '').slice(0, 7) === ym);
-  }
-  periodLabel.textContent = 'Semua transaksi';
-  return list;
-}
-
-function render() {
-  let visible = [...transactions];
-
-  visible = filterByPeriod(visible);
-
-  const q = (searchCategory.value || '').trim().toLowerCase();
-  if (q) {
-    visible = visible.filter((t) =>
-      (t.category || '').toLowerCase().includes(q)
-    );
-  }
-
-  visible.sort((a, b) => Number(b.id) - Number(a.id));
-
-  let income = 0;
-  let expense = 0;
-  for (const t of visible) {
-    if (t.type === 'income') income += t.amount;
-    else expense += t.amount;
-  }
-  const balance = income - expense;
-
-  totalIncomeEl.textContent = formatCurrency(income);
-  totalExpenseEl.textContent = formatCurrency(expense);
-  balanceEl.textContent = formatCurrency(balance);
-  countLabel.textContent = `${visible.length} transaksi`;
-
-  if (!visible.length) {
-    transactionBody.innerHTML =
-      '<tr><td colspan="6" class="empty-state">Belum ada transaksi untuk filter ini.</td></tr>';
-    return;
-  }
-
-  transactionBody.innerHTML = visible
-    .map((t) => {
-      const dateStr = new Date((t.date || '') + 'T00:00:00').toLocaleDateString(
-        'id-ID',
-        { day: '2-digit', month: 'short', year: 'numeric' }
-      );
-      return `
+    filtered.forEach((t) => {
+        list.innerHTML += `
         <tr>
-          <td>${dateStr}</td>
-          <td><span class="tag">${t.type === 'income' ? 'Masuk' : 'Keluar'}</span></td>
-          <td>${t.category || '-'}</td>
-          <td>${t.note || '-'}</td>
-          <td class="right amount ${t.type}">
-            ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount).replace('Rp', '')}
-          </td>
-          <td class="center">
-            <button class="btn-sm danger" data-action="delete" data-id="${t.id}">Hapus</button>
-          </td>
-        </tr>
-      `;
-    })
-    .join('');
+            <td class="${t.type === "income" ? "green" : "red"}">Rp ${t.amount.toLocaleString(
+            "id-ID"
+        )}</td>
+            <td>${t.type === "income" ? "Masuk" : "Keluar"}</td>
+            <td>${t.note || "-"}</td>
+        </tr>`;
+    });
 }
+
+/* ====== RIWAYAT TRANSAKSI ====== */
+function loadHistory(data) {
+    const list = document.getElementById("historyList");
+    list.innerHTML = "";
+
+    data.forEach((t) => {
+        list.innerHTML += `
+        <tr>
+            <td>${t.date}</td>
+            <td>${
+              t.type === "income"
+                ? '<span class="green">Masuk</span>'
+                : '<span class="red">Keluar</span>'
+            }</td>
+            <td>${t.category || "-"}</td>
+            <td>${t.note || "-"}</td>
+            <td class="${t.type === "income" ? "green" : "red"}">Rp ${t.amount.toLocaleString(
+            "id-ID"
+        )}</td>
+        </tr>`;
+    });
+}
+
+/* ====== MODAL ====== */
+function openRiwayat() {
+    document.getElementById("riwayatModal").style.display = "block";
+}
+function closeRiwayat() {
+    document.getElementById("riwayatModal").style.display = "none";
+}
+
+/* ====== JALANKAN ====== */
+loadData();
