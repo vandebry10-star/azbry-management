@@ -190,7 +190,7 @@ textarea {
 .stats-row {
   display: flex;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: -8px;
 }
 
 .mini-stat {
