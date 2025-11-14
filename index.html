@@ -1,158 +1,181 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Azbry Finance Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Azbry Finance Dashboard</title>
 
-  <link rel="stylesheet" href="style.css" />
-</head>
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#000000" />
 
-<body>
-  <div class="container">
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-    <!-- ===== TITLE DI TENGAH ATAS ===== -->
-    <h1 class="app-title">Azbry Finance</h1>
+  <body>
+    <div class="container">
+      <!-- ===== TITLE DI TENGAH ATAS ===== -->
+      <h1 class="app-title">Azbry Finance</h1>
 
-    <!-- ========= HEADER (SALDO + WAKTU) ========= -->
-    <header class="header">
-      <!-- Saldo kiri -->
-      <div class="saldo-box card mini-card">
-        <p class="label-top">Saldo</p>
-        <h2 id="saldoValue">Rp 0</h2>
-      </div>
-
-      <!-- Waktu kanan -->
-      <div class="time-box card mini-card">
-        <p class="label-top">Waktu</p>
-        <p id="current-date" class="date-mini">-</p>
-        <p id="current-time" class="time-mini">--:--:--</p>
-      </div>
-    </header>
-
-    <!-- ========= MAIN (FORM + INFO) ========= -->
-    <main class="main">
-
-      <!-- FORM TAMBAH TRANSAKSI -->
-      <section class="card form-card">
-        <h2 class="section-title">Tambah Transaksi</h2>
-        <p class="sub-text">
-          Catat pemasukan & pengeluaran. Data tersimpan di Supabase.
-        </p>
-
-        <form id="transactionForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="dateInput">Tanggal</label>
-              <input type="date" id="dateInput" required />
-            </div>
-
-            <div class="form-group">
-              <label for="typeInput">Jenis</label>
-              <select id="typeInput" required>
-                <option value="income">Pemasukan</option>
-                <option value="expense">Pengeluaran</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="amountInput">Nominal</label>
-            <input
-              type="text"
-              inputmode="numeric"
-              id="amountInput"
-              placeholder="contoh: 25.000"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="categoryInput">Kategori</label>
-            <input
-              type="text"
-              id="categoryInput"
-              placeholder="Makan, gaji, wifi, game, dll"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="noteInput">Catatan</label>
-            <textarea
-              id="noteInput"
-              rows="2"
-              placeholder="Opsional"
-            ></textarea>
-          </div>
-
-          <button type="submit" class="btn-primary">Simpan Transaksi</button>
-        </form>
-      </section>
-
-      <!-- INFO / MOTIVASI -->
-      <section class="card info-card">
-        <h2 class="section-title">Azbry Finance Note</h2>
-        <p class="motiv-title">
-          Keuangan rapi itu pelan-pelan, yang penting rutin.
-        </p>
-
-        <ul class="motivation-list">
-          <li>Fokus nulis tiap hari, bukan besar kecil nominal.</li>
-          <li>Yang penting tau uang masuk & keluar ke mana.</li>
-          <li>Saldo naik pelan-pelan lebih keren dari nggak ke-track.</li>
-        </ul>
-
-        <div class="stats-row">
-          <div class="mini-stat">
-            <span class="label">Total Transaksi</span>
-            <span id="totalTransactions">0</span>
-          </div>
-          <div class="mini-stat">
-            <span class="label">Terakhir Update</span>
-            <span id="lastUpdated">-</span>
-          </div>
+      <!-- ========= HEADER (SALDO + WAKTU) ========= -->
+      <header class="header">
+        <!-- Saldo kiri -->
+        <div class="saldo-box card mini-card">
+          <p class="label-top">Saldo</p>
+          <h2 id="saldoValue">Rp 0</h2>
         </div>
-      </section>
-    </main>
-  </div>
 
-  <!-- ========= FLOATING BUTTONS ========= -->
-  <button class="float-btn float-reset" onclick="resetRiwayat()">
-    🗑 Reset
-  </button>
+        <!-- Waktu kanan -->
+        <div class="time-box card mini-card">
+          <p class="label-top">Waktu</p>
+          <p id="current-date" class="date-mini">-</p>
+          <p id="current-time" class="time-mini">--:--:--</p>
+        </div>
+      </header>
 
-  <button class="float-btn float-history" onclick="openRiwayat()">
-    📜 Riwayat
-  </button>
+      <!-- ========= MAIN (FORM + INFO) ========= -->
+      <main class="main">
+        <!-- FORM TAMBAH TRANSAKSI -->
+        <section class="card form-card">
+          <h2 class="section-title">Tambah Transaksi</h2>
+          <p class="sub-text">
+            Catat pemasukan & pengeluaran. Data tersimpan di Supabase.
+          </p>
 
-  <!-- ========= MODAL RIWAYAT ========= -->
-  <div id="riwayatModal" class="modal-backdrop">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Riwayat Transaksi</h2>
-        <button class="close-btn" onclick="closeRiwayat()">✕</button>
-      </div>
+          <form id="transactionForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="dateInput">Tanggal</label>
+                <input type="date" id="dateInput" required />
+              </div>
 
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Tanggal</th>
-            <th>Jenis</th>
-            <th>Kategori</th>
-            <th>Catatan</th>
-            <th>Nominal</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="historyList">
-          <tr><td colspan="6">Memuat...</td></tr>
-        </tbody>
-      </table>
+              <div class="form-group">
+                <label for="typeInput">Jenis</label>
+                <select id="typeInput" required>
+                  <option value="income">Pemasukan</option>
+                  <option value="expense">Pengeluaran</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="amountInput">Nominal</label>
+              <input
+                type="text"
+                inputmode="numeric"
+                id="amountInput"
+                placeholder="contoh: 25.000"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="categoryInput">Kategori</label>
+              <input
+                type="text"
+                id="categoryInput"
+                placeholder="Makan, gaji, wifi, game, dll"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="noteInput">Catatan</label>
+              <textarea
+                id="noteInput"
+                rows="2"
+                placeholder="Opsional"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">
+              Simpan Transaksi
+            </button>
+          </form>
+        </section>
+
+        <!-- INFO / MOTIVASI -->
+        <section class="card info-card">
+          <h2 class="section-title">Azbry Finance Note</h2>
+          <p class="motiv-title">
+            Keuangan rapi itu pelan-pelan, yang penting rutin.
+          </p>
+
+          <ul class="motivation-list">
+            <li>Fokus nulis tiap hari, bukan besar kecil nominal.</li>
+            <li>Yang penting tau uang masuk & keluar ke mana.</li>
+            <li>Saldo naik pelan-pelan lebih keren dari nggak ke-track.</li>
+          </ul>
+
+          <div class="stats-row">
+            <div class="mini-stat">
+              <span class="label">Total Transaksi</span>
+              <span id="totalTransactions">0</span>
+            </div>
+            <div class="mini-stat">
+              <span class="label">Terakhir Update</span>
+              <span id="lastUpdated">-</span>
+            </div>
+          </div>
+
+          <p class="small-text">
+            Catet aja dulu, analisa belakangan. Yang penting konsisten. 😎
+          </p>
+        </section>
+      </main>
     </div>
-  </div>
 
-  <!-- ========= SCRIPT ========= -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js"></script>
-</body>
+    <!-- ========= FLOATING BUTTONS ========= -->
+    <button class="float-btn float-reset" onclick="resetRiwayat()">
+      🗑 Reset Semua
+    </button>
+
+    <button class="float-btn float-history" onclick="openRiwayat()">
+      📜 Riwayat
+    </button>
+
+    <!-- ========= MODAL RIWAYAT ========= -->
+    <div id="riwayatModal" class="modal-backdrop" style="display: none">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Riwayat Transaksi</h2>
+          <button class="close-btn" onclick="closeRiwayat()">✕</button>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Jenis</th>
+              <th>Kategori</th>
+              <th>Catatan</th>
+              <th>Nominal</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="historyList">
+            <tr>
+              <td colspan="6">Memuat...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========= SCRIPT ========= -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+    <!-- REGISTER SERVICE WORKER PWA -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .catch((err) => console.error("SW registration failed:", err));
+      }
+    </script>
+  </body>
 </html>
