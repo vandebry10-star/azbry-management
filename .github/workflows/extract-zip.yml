@@ -1,0 +1,92 @@
+name: Extract Azbry Finance Zip
+
+on:
+  push:
+    paths:
+      - '*.zip'
+  workflow_dispatch:
+    inputs:
+      zip_path:
+        description: 'Path file .zip (opsional, default auto-detect)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect ZIP file
+        id: detect
+        run: |
+          if [ -n "${{ github.event.inputs.zip_path }}" ]; then
+            ZIP_PATH="${{ github.event.inputs.zip_path }}"
+          else
+            # Auto-detect zip file di root repo
+            ZIP_PATH=$(find . -maxdepth 1 -name "*.zip" | head -1 | sed 's|^\./||')
+          fi
+
+          if [ -z "$ZIP_PATH" ] || [ ! -f "$ZIP_PATH" ]; then
+            echo "❌ Tidak ada file .zip ditemukan di root repo"
+            exit 1
+          fi
+
+          echo "✅ ZIP ditemukan: $ZIP_PATH"
+          echo "zip_path=$ZIP_PATH" >> $GITHUB_OUTPUT
+
+      - name: Install unzip & extract
+        run: |
+          ZIP="${{ steps.detect.outputs.zip_path }}"
+          echo "📦 Mengekstrak: $ZIP"
+
+          sudo apt-get update -y -q
+          sudo apt-get install -y -q unzip
+
+          rm -rf _extracted_temp
+          mkdir -p _extracted_temp
+          unzip -q "$ZIP" -d _extracted_temp
+          echo "✅ Ekstrak selesai"
+
+      - name: Move extracted content to repo root
+        shell: bash
+        run: |
+          shopt -s dotglob
+          roots=(_extracted_temp/*)
+
+          # Kalau ada satu subfolder (format zip dari GitHub "Download ZIP")
+          if [ ${#roots[@]} -eq 1 ] && [ -d "${roots[0]}" ]; then
+            echo "📂 Satu subfolder ditemukan: ${roots[0]}, isi dipindahkan ke root"
+            mv "${roots[0]}"/* . 2>/dev/null || true
+          else
+            echo "📂 Multiple files, pindahkan semua ke root"
+            mv _extracted_temp/* . 2>/dev/null || true
+          fi
+
+      - name: Cleanup temp folder & ZIP
+        run: |
+          ZIP="${{ steps.detect.outputs.zip_path }}"
+          rm -rf _extracted_temp
+          rm -f "$ZIP"
+          # Hapus juga setup-workspace.sh kalau masih ada (udah ga perlu)
+          rm -f setup-workspace.sh
+          echo "🧹 Cleanup selesai"
+
+      - name: Show hasil
+        run: |
+          echo "📁 File di repo setelah extract:"
+          ls -la
+
+      - name: Commit hasil extract
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: extract zip → deploy-ready files"
+          commit_user_name: Azbry-Bot
+          commit_user_email: bot@azbry.dev
+          push_options: --force-with-lease
+          
