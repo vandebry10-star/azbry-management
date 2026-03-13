@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Azbry Finance</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0a0b0f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- NOISE OVERLAY -->
+    <div class="noise-overlay"></div>
+
+    <!-- ── SIDEBAR NAV ── -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Azbry</span>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+          <span class="nav-icon">⬡</span>
+          <span class="nav-label">Dashboard</span>
+        </li>
+        <li class="nav-item" data-page="tambah" onclick="switchPage('tambah')">
+          <span class="nav-icon">⊕</span>
+          <span class="nav-label">Tambah</span>
+        </li>
+        <li class="nav-item" data-page="riwayat" onclick="switchPage('riwayat')">
+          <span class="nav-icon">≡</span>
+          <span class="nav-label">Riwayat</span>
+        </li>
+        <li class="nav-item" data-page="analitik" onclick="switchPage('analitik')">
+          <span class="nav-icon">◌</span>
+          <span class="nav-label">Analitik</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-bottom">
+        <button class="privacy-toggle" id="privacyToggle" onclick="togglePrivacy()" title="Privacy Mode">
+          <span id="privacyIcon">👁</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- ── BOTTOM NAV (mobile) ── -->
+    <nav class="bottom-nav">
+      <button class="bnav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+        <span class="bnav-icon">⬡</span>
+        <span class="bnav-label">Home</span>
+      </button>
+      <button class="bnav-item" data-page="tambah" onclick="switchPage('tambah')">
+        <span class="bnav-icon add-btn-icon">⊕</span>
+        <span class="bnav-label">Tambah</span>
+      </button>
+      <button class="bnav-item" data-page="riwayat" onclick="switchPage('riwayat')">
+        <span class="bnav-icon">≡</span>
+        <span class="bnav-label">Riwayat</span>
+      </button>
+      <button class="bnav-item" data-page="analitik" onclick="switchPage('analitik')">
+        <span class="bnav-icon">◌</span>
+        <span class="bnav-label">Analitik</span>
+      </button>
+    </nav>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="main-content">
+
+      <!-- ============ PAGE: DASHBOARD ============ -->
+      <div class="page active" id="page-dashboard">
+        <!-- Header bar -->
+        <div class="page-header">
+          <div class="header-left">
+            <p class="header-greeting" id="greetingText">Halo 👋</p>
+            <p class="header-sub" id="headerDate">—</p>
+          </div>
+          <div class="header-right">
+            <button class="icon-btn privacy-inline" onclick="togglePrivacy()" title="Privacy">
+              <span id="privacyIconMobile">👁</span>
+            </button>
+            <div class="clock-badge">
+              <span id="clockDisplay">--:--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saldo hero card -->
+        <div class="hero-card" id="heroCard">
+          <div class="hero-label">Saldo Sekarang</div>
+          <div class="hero-amount" id="saldoValue">Rp 0</div>
+          <div class="hero-row">
+            <div class="hero-stat">
+              <span class="hs-label">↑ Masuk</span>
+              <span class="hs-val green" id="totalIncome">Rp 0</span>
+            </div>
+            <div class="hero-divider"></div>
+            <div class="hero-stat">
+              <span class="hs-label">↓ Keluar</span>
+              <span class="hs-val red" id="totalExpense">Rp 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick stats row -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="sc-icon">📊</span>
+            <span class="sc-val" id="statTxnCount">0</span>
+            <span class="sc-label">Total Transaksi</span>
+          </div>
+          <div class="stat-card">
+            <span class="sc-icon">📅</span>
+            <span class="sc-val" id="statTodayCount">0</span>
+            <span class="sc-label">Hari Ini</span>
+          </div>
+          <div class="stat-card">
+            <span class="sc-icon">📁</span>
+            <span class="sc-val" id="statCatCount">0</span>
+            <span class="sc-label">Kategori</span>
+          </div>
+        </div>
+
+        <!-- Mini chart -->
+        <div class="card chart-card">
+          <div class="card-header">
+            <span class="card-title">7 Hari Terakhir</span>
+            <span class="chart-legend">
+              <span class="leg green">▪ Masuk</span>
+              <span class="leg red">▪ Keluar</span>
+            </span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="miniChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Transaksi hari ini -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Transaksi Hari Ini</span>
+            <span class="card-count" id="todayCount">0 transaksi</span>
+          </div>
+          <div class="txn-list" id="todayList">
+            <div class="empty-state">
+              <span>Belum ada transaksi hari ini</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PAGE: TAMBAH ============ -->
+      <div class="page" id="page-tambah">
+        <div class="page-header">
+          <h1 class="page-title">Tambah Transaksi</h1>
+        </div>
+
+        <!-- Type switcher -->
+        <div class="type-switcher" id="typeSwitcher">
+          <button class="type-btn active" data-type="income" onclick="setType('income')">
+            <span>↑</span> Pemasukan
+          </button>
+          <button class="type-btn" data-type="expense" onclick="setType('expense')">
+            <span>↓</span> Pengeluaran
+          </button>
+        </div>
+
+        <form id="transactionForm" class="form-card card">
+          <!-- Amount besar di atas -->
+          <div class="amount-input-wrap">
+            <span class="amount-prefix">Rp</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              id="amountInput"
+              class="amount-input-big"
+              placeholder="0"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dateInput">Tanggal</label>
+              <input type="date" id="dateInput" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label for="categoryInput">Kategori</label>
+              <input type="text" id="categoryInput" class="form-input" placeholder="Makan, gaji, dll" list="categoryList" />
+              <datalist id="categoryList">
+                <option value="Makan">
+                <option value="Transport">
+                <option value="Gaji">
+                <option value="Belanja">
+                <option value="Tagihan">
+                <option value="Hiburan">
+                <option value="Kesehatan">
+                <option value="Tabungan">
+              </datalist>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="noteInput">Catatan (opsional)</label>
+            <textarea id="noteInput" class="form-input" rows="2" placeholder="Keterangan tambahan..."></textarea>
+          </div>
+
+          <!-- Category quick-pick -->
+          <div class="quick-cats" id="quickCats">
+            <button type="button" class="qcat" onclick="pickCat(this)">🍜 Makan</button>
+            <button type="button" class="qcat" onclick="pickCat(this)">🚗 Transport</button>
+            <button type="button" class="qcat" onclick="pickCat(this)">💰 Gaji</button>
+            <button type="button" class="qcat" onclick="pickCat(this)">🛒 Belanja</button>
+            <button type="button" class="qcat" onclick="pickCat(this)">⚡ Tagihan</button>
+            <button type="button" class="qcat" onclick="pickCat(this)">🎮 Hiburan</button>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submitBtn">
+            <span class="btn-text">Simpan Transaksi</span>
+            <span class="btn-loader" style="display:none">⟳</span>
+          </button>
+        </form>
+
+        <!-- Toast feedback -->
+        <div class="toast" id="toast"></div>
+      </div>
+
+      <!-- ============ PAGE: RIWAYAT ============ -->
+      <div class="page" id="page-riwayat">
+        <div class="page-header">
+          <h1 class="page-title">Riwayat</h1>
+          <div class="header-actions">
+            <button class="icon-btn" onclick="exportCSV()" title="Export CSV">⤓</button>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+          <select id="filterType" class="filter-select" onchange="applyFilter()">
+            <option value="all">Semua</option>
+            <option value="income">Masuk</option>
+            <option value="expense">Keluar</option>
+          </select>
+          <select id="filterMonth" class="filter-select" onchange="applyFilter()">
+            <option value="all">Semua bulan</option>
+          </select>
+          <input type="text" id="filterSearch" class="filter-input" placeholder="Cari..." oninput="applyFilter()" />
+        </div>
+
+        <div class="txn-list-full" id="historyList">
+          <div class="empty-state">Memuat...</div>
+        </div>
+
+        <!-- Danger zone -->
+        <div class="danger-zone">
+          <button class="btn-danger" onclick="resetRiwayat()">🗑 Reset Semua Data</button>
+        </div>
+      </div>
+
+      <!-- ============ PAGE: ANALITIK ============ -->
+      <div class="page" id="page-analitik">
+        <div class="page-header">
+          <h1 class="page-title">Analitik</h1>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="analitik-summary">
+          <div class="summary-card income-card">
+            <span class="sc-top">Total Masuk</span>
+            <span class="sc-big green" id="aTotalIncome">Rp 0</span>
+          </div>
+          <div class="summary-card expense-card">
+            <span class="sc-top">Total Keluar</span>
+            <span class="sc-big red" id="aTotalExpense">Rp 0</span>
+          </div>
+        </div>
+
+        <!-- Donut chart kategori -->
+        <div class="card chart-card">
+          <div class="card-header">
+            <span class="card-title">Pengeluaran per Kategori</span>
+          </div>
+          <div class="chart-wrap donut-wrap">
+            <canvas id="donutChart"></canvas>
+          </div>
+          <div id="categoryLegend" class="cat-legend"></div>
+        </div>
+
+        <!-- Monthly bar chart -->
+        <div class="card chart-card">
+          <div class="card-header">
+            <span class="card-title">Tren 6 Bulan</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top spending categories -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top Pengeluaran</span>
+          </div>
+          <div id="topExpenses" class="top-list"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ── CONFIRM MODAL ── -->
+    <div class="modal-backdrop" id="confirmModal" style="display:none">
+      <div class="confirm-modal">
+        <p class="confirm-text" id="confirmText">Yakin?</p>
+        <div class="confirm-actions">
+          <button class="btn-cancel" onclick="closeConfirm()">Batal</button>
+          <button class="btn-confirm-ok" id="confirmOkBtn">Ya, Hapus</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
+    </script>
+  </body>
+</html>
